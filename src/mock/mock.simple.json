@@ -1,0 +1,19 @@
+{
+  "name": "simple-mock",
+  "data": [
+    {
+      "name": "Input",
+      "attr": {
+        "size": "large",
+        "value": "第一个组件"
+      }
+    },
+    {
+      "name": "Input",
+      "attr": {
+        "size": "large",
+        "value": "第二个组件"
+      }
+    }
+  ]
+}
