@@ -1,4 +1,7 @@
 {
+  "name": "re-magic-layout",
+  "author": "Dawnlck",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "umi dev",
