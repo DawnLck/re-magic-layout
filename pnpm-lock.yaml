@@ -1,6 +1,7 @@
 dependencies:
+  '@ant-design/icons': 4.5.0_react-dom@17.0.1+react@17.0.1
   '@ant-design/pro-layout': 6.15.2_2889ed2cdbea3301568a0980765c1010
-  '@umijs/preset-react': 1.8.0_d2984e08c6d562bda310b054f812403b
+  '@umijs/preset-react': 1.8.0_eb2a258bf600102deae2217e286bc6d3
   antd: 4.14.0_react-dom@17.0.1+react@17.0.1
   umi: 3.4.2
 devDependencies:
@@ -1142,8 +1143,9 @@ packages:
     resolution:
       integrity: sha1-sK/Gz4RGvdsO0sL6QnHEz/mT1og=
       tarball: '@umijs/plugin-initial-state/download/@umijs/plugin-initial-state-2.3.0.tgz'
-  /@umijs/plugin-layout/0.13.5_97e8507770510ef53fcbd85800382786:
+  /@umijs/plugin-layout/0.13.5_b1ff70d3f983edb3bc42059ade0a6663:
     dependencies:
+      '@ant-design/icons': 4.5.0_react-dom@17.0.1+react@17.0.1
       '@ant-design/pro-layout': 6.15.2_2889ed2cdbea3301568a0980765c1010
       '@umijs/plugin-initial-state': 2.3.0_umi@3.4.2
       '@umijs/plugin-locale': 0.10.9_5156f5f31e83bb5576a3ff650ad033b9
@@ -1243,7 +1245,7 @@ packages:
     resolution:
       integrity: sha1-GP2zRBvsPlQ2rv9KQyIcAfzs/Ug=
       tarball: '@umijs/preset-built-in/download/@umijs/preset-built-in-3.4.2.tgz'
-  /@umijs/preset-react/1.8.0_d2984e08c6d562bda310b054f812403b:
+  /@umijs/preset-react/1.8.0_eb2a258bf600102deae2217e286bc6d3:
     dependencies:
       '@umijs/plugin-access': 2.3.3_d5878a69d59c6f28a33ff93d9d737ace
       '@umijs/plugin-analytics': 0.2.2_umi@3.4.2
@@ -1252,7 +1254,7 @@ packages:
       '@umijs/plugin-dva': 0.10.0_5156f5f31e83bb5576a3ff650ad033b9
       '@umijs/plugin-helmet': 1.1.1_react@17.0.1+umi@3.4.2
       '@umijs/plugin-initial-state': 2.3.0_umi@3.4.2
-      '@umijs/plugin-layout': 0.13.5_97e8507770510ef53fcbd85800382786
+      '@umijs/plugin-layout': 0.13.5_b1ff70d3f983edb3bc42059ade0a6663
       '@umijs/plugin-locale': 0.10.9_5156f5f31e83bb5576a3ff650ad033b9
       '@umijs/plugin-model': 2.5.6_umi@3.4.2
       '@umijs/plugin-request': 2.5.2_react@17.0.1+umi@3.4.2
@@ -1260,6 +1262,7 @@ packages:
       umi: 3.4.2
     dev: false
     peerDependencies:
+      '@ant-design/icons': '*'
       '@ant-design/pro-layout': '*'
       react: '*'
       react-dom: '*'
@@ -8895,6 +8898,7 @@ packages:
       integrity: sha1-ae7WhpCAju34H5cUAUNWs2zdIPQ=
       tarball: zscroller/download/zscroller-0.4.8.tgz
 specifiers:
+  '@ant-design/icons': ^4.5.0
   '@ant-design/pro-layout': ^6.5.0
   '@types/react': ^17.0.0
   '@types/react-dom': ^17.0.0

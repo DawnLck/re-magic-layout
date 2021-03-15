@@ -6,13 +6,15 @@ import PropTypes from 'prop-types';
 import { Skeleton, Card } from 'antd';
 export default function MockCard(props: any) {
   return (
-    <Card
-      className="mock-card"
-      size={props.size}
-      style={{ width: props.width, height: props.height }}
-    >
-      <Skeleton avatar={props.avatar} paragraph={{ rows: 4 }} />
-    </Card>
+    <div className="mock-card-container">
+      <Card
+        className="mock-card"
+        size={props.size}
+        style={{ width: props.width, height: props.height }}
+      >
+        <Skeleton avatar={props.avatar} paragraph={{ rows: 3 }} />
+      </Card>
+    </div>
   );
 }
 
@@ -23,7 +25,7 @@ MockCard.propTypes = {
 };
 
 MockCard.defaultProps = {
-  width: 400,
-  height: 250,
+  width: 300,
+  height: 200,
   avatar: true,
 };
