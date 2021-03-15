@@ -2,6 +2,7 @@
 
 @color-bg: #f7f8fa;
 
+// Common
 .FillContainer {
   width: 100%;
   height: 100%;
@@ -23,26 +24,21 @@
   border-radius: 4px;
 }
 
+// Global
 body {
   background-color: @color-bg;
 }
 
-.title {
-  background: rgb(121, 242, 157);
-}
-
+// Page
 .page {
   position: absolute;
   .FillContainer();
   padding: 20px;
-  display: flex;
-  flex-direction: column;
 }
 
 .container {
   .FillContainer();
   .GridBackground();
-  .Card();
 }
 
 .control {
@@ -50,5 +46,15 @@ body {
   width: 100%;
   height: 120px;
   margin-bottom: 20px;
+}
+
+.settings,
+.control,
+.container {
   .Card();
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
 }
