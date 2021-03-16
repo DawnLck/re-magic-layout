@@ -4,6 +4,8 @@ import './index.less';
 
 import { MockCard, ToolBar } from '../widgets';
 
+import { Layout } from '../components';
+
 import { Row, Col } from 'antd';
 
 export default function IndexPage() {
@@ -13,9 +15,9 @@ export default function IndexPage() {
       <Col flex="auto" className="main">
         <ToolBar></ToolBar>
 
-        <div className="container">
+        <Layout>
           <MockCard></MockCard>
-        </div>
+        </Layout>
       </Col>
     </Row>
   );
