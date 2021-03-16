@@ -1,15 +1,16 @@
-# umi project
+# re-magic-layout
+> **re-magic-layout** 是一款基于React框架实现的一款多功能画布组件，致力于成为最易使用和最易扩展的画布。
+## 已完成功能
 
-## Getting Started
+## 待完成功能
 
-Install dependencies,
+1. [ ] 将传入的子元素，包裹成可拖拽的单元
+2. [ ] 实现元素的自由拖拽，但是需要有边界（因为画布是有限的，以后再考虑无限画布的方案）
+3. [ ] 实现画布内元素的多种布局类型
+   1. [ ] 浮动布局
+   2. [ ] Flex
+   3. [ ] 栅格系统 
+4. 其他待定....
 
-```bash
-$ yarn
-```
 
-Start the dev server,
 
-```bash
-$ yarn start
-```
