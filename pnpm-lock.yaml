@@ -3,6 +3,7 @@ dependencies:
   '@ant-design/pro-layout': 6.15.2_2889ed2cdbea3301568a0980765c1010
   '@umijs/preset-react': 1.8.0_eb2a258bf600102deae2217e286bc6d3
   antd: 4.14.0_react-dom@17.0.1+react@17.0.1
+  react-draggable: 4.4.3
   umi: 3.4.2
 devDependencies:
   '@types/react': 17.0.3
@@ -7012,6 +7013,14 @@ packages:
     resolution:
       integrity: sha1-HeJWBHTsnw4zQoVmLt5S28VCb8Y=
       tarball: react-dom/download/react-dom-17.0.1.tgz
+  /react-draggable/4.4.3:
+    dependencies:
+      classnames: 2.2.6
+      prop-types: 15.7.2
+    dev: false
+    resolution:
+      integrity: sha1-ByfyyuWBPjaw5JYr8RsvnvK0BvM=
+      tarball: react-draggable/download/react-draggable-4.4.3.tgz
   /react-fast-compare/3.2.0:
     dev: false
     resolution:
@@ -8909,6 +8918,7 @@ specifiers:
   prettier: ^2.2.0
   react: 17.x
   react-dom: 17.x
+  react-draggable: ^4.4.3
   typescript: ^4.1.2
   umi: ^3.4.2
   yorkie: ^2.0.0

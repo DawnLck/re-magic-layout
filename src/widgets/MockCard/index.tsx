@@ -4,9 +4,27 @@
 import './index.less';
 import PropTypes from 'prop-types';
 import { Skeleton, Card } from 'antd';
+
+import { DraggableEventHandler } from 'react-draggable';
+
 export default function MockCard(props: any) {
+  const {
+    className,
+    style,
+    onMouseDown,
+    onMouseUp,
+    onTouchStart,
+    onTouchEnd,
+  } = props;
   return (
-    <div className="mock-card-container">
+    <div
+      style={style}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      className={'mock-card-container ' + className}
+    >
       <Card
         className="mock-card"
         size={props.size}

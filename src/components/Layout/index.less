@@ -1,0 +1,27 @@
+/* layout.less */
+
+@name: layout;
+@color-grey: #ccc;
+
+.fillWh {
+  width: 100%;
+  height: 100%;
+}
+
+.GridBackground {
+  background: linear-gradient(90deg, rgba(60, 10, 30, 0.1) 3%, transparent 0),
+    linear-gradient(1turn, rgba(60, 10, 30, 0.1) 3%, transparent 0);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+
+.@{name} {
+  .fillWh();
+  .GridBackground();
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  float: left;
+  border: 1px solid @color-grey;
+}

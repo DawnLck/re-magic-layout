@@ -1,6 +1,7 @@
 /* Page - index - tsx */
 
 import './index.less';
+import './draggable.less';
 
 import { MockCard, ToolBar } from '../widgets';
 
@@ -15,9 +16,12 @@ export default function IndexPage() {
       <Col flex="auto" className="main">
         <ToolBar></ToolBar>
 
-        <Layout>
-          <MockCard></MockCard>
-        </Layout>
+        <div className="platform">
+          <Layout>
+            <MockCard></MockCard>
+            <MockCard></MockCard>
+          </Layout>
+        </div>
       </Col>
     </Row>
   );
