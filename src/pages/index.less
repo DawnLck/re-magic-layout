@@ -27,6 +27,7 @@ body {
   position: absolute;
   .FillContainer();
   padding: 20px;
+  margin: 0 !important;
 }
 
 .platform {
@@ -35,13 +36,23 @@ body {
   padding: 10px;
 }
 
-.settings,
+.settings-panel,
 .toolbar,
 .platform {
   .Card();
 }
 
+.settings-panel {
+  .FillContainer();
+}
+
 .main {
   display: flex;
   flex-direction: column;
+}
+
+@media screen and (max-width: 1000px) {
+  .settings {
+    display: none;
+  }
 }

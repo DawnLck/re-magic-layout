@@ -11,8 +11,10 @@ import { Row, Col } from 'antd';
 
 export default function IndexPage() {
   return (
-    <Row className="page" gutter={{ xs: 8, sm: 16, md: 24 }}>
-      <Col flex="300px" className="settings"></Col>
+    <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
+      <Col flex="300px" className="settings">
+        <div className="settings-panel"></div>
+      </Col>
       <Col flex="auto" className="main">
         <ToolBar></ToolBar>
 
