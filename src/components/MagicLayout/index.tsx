@@ -1,10 +1,24 @@
-import React, { Component } from 'react';
+/**
+ * Magic Layout
+ */
+
+import React, { PureComponent } from 'react';
 
 import Dragbble from 'react-draggable';
 
 import './index.less';
 
-export default class Layout extends Component {
+import { classNames } from './utils';
+
+interface ReactDraggableCommonProps {
+  bounds: string;
+  grid?: [number, number];
+}
+interface MagicLayoutProps {
+  layout: string;
+}
+
+export default class MagicLayout extends PureComponent<MagicLayoutProps> {
   state = {
     activeDrags: 0,
     deltaPosition: {
@@ -44,28 +58,38 @@ export default class Layout extends Component {
     },
   ): React.ReactNode => {
     if (!children) return children;
+    let commonProps: ReactDraggableCommonProps = {
+      bounds: 'parent',
+    };
+    if (this.props.layout === 'grid') {
+      commonProps.grid = [20, 20];
+    }
+
     if (Array.isArray(children)) {
       return children.map((child, index) => {
         return (
-          <Dragbble bounds="parent" key={index} {...dragHandlers}>
+          <Dragbble key={index} {...commonProps} {...dragHandlers}>
             {child}
           </Dragbble>
         );
       });
     } else {
       return (
-        <Dragbble bounds="parent" {...dragHandlers}>
+        <Dragbble {...commonProps} {...dragHandlers}>
           {children}
         </Dragbble>
       );
     }
   };
+
   render() {
-    const { children } = this.props;
+    const { children, layout } = this.props;
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
 
     return (
-      <div className="layout">{this.withDraggable(children, dragHandlers)}</div>
+      <div className={classNames(['re-magic-layout', `layout-${layout}`])}>
+        {this.withDraggable(children, dragHandlers)}
+      </div>
     );
   }
 }

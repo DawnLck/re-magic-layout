@@ -5,8 +5,6 @@ import './index.less';
 import PropTypes from 'prop-types';
 import { Skeleton, Card } from 'antd';
 
-import { DraggableEventHandler } from 'react-draggable';
-
 export default function MockCard(props: any) {
   const {
     className,
@@ -28,7 +26,7 @@ export default function MockCard(props: any) {
       <Card
         className="mock-card"
         size={props.size}
-        style={{ width: props.width, height: props.height }}
+        style={{ minWidth: props.width, minHeight: props.height }}
       >
         <Skeleton avatar={props.avatar} paragraph={{ rows: 3 }} />
       </Card>
@@ -43,7 +41,7 @@ MockCard.propTypes = {
 };
 
 MockCard.defaultProps = {
-  width: 300,
-  height: 200,
+  width: '100%',
+  height: '100%',
   avatar: true,
 };

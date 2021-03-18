@@ -1,6 +1,6 @@
 /* layout.less */
 
-@name: layout;
+@name: re-magic-layout;
 @color-grey: #ccc;
 
 .fillWh {
@@ -24,4 +24,27 @@
   padding: 0;
   float: left;
   border: 1px solid @color-grey;
+}
+
+.react-draggable {
+  flex: 1 1 auto;
+  height: min-content;
+  transition: all 200ms ease-in-out;
+  &-dragging {
+    transition: none;
+  }
+}
+
+.layout {
+  display: block;
+  &-free {
+  }
+  &-float {
+    .react-draggable {
+      transform: none !important;
+    }
+  }
+  &-flex {
+    display: flex;
+  }
 }
