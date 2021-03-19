@@ -9,16 +9,16 @@ import { MockCard, ToolBar, SettingPanel } from '../widgets';
 import { MagicLayout } from '../components';
 import { Row, Col } from 'antd';
 
-import { layoutTypeStore } from '../store';
-import store from '@/store/layoutType';
+import { mainStore } from '../store';
+import store from '@/store/mainStore';
 
 class IndexPage extends Component {
   state = {
     layout: 'free',
   };
   componentDidMount() {
-    layoutTypeStore.subscribe(() => {
-      const { layout } = layoutTypeStore.getState();
+    mainStore.subscribe(() => {
+      const { layout } = mainStore.getState();
       this.setState({
         layout,
       });

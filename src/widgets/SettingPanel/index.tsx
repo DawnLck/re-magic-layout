@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Radio } from 'antd';
 import './index.less';
 import FormGroup from '../FormGroup';
-import { layoutTypeStore } from '../../store';
+import { mainStore } from '../../store';
 
 const optionsWithDisabled = [
   { label: 'Free', value: 'free' },
@@ -23,8 +23,9 @@ class SettingPanel extends Component {
     this.setState({
       layoutType: value,
     });
-    layoutTypeStore.dispatch({
-      type: `layout/${value}`,
+    mainStore.dispatch({
+      type: `layout`,
+      value,
     });
   };
 

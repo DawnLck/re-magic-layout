@@ -1,4 +1,4 @@
 /**
  * Store index.ts
  */
-export { default as layoutTypeStore } from './layoutType';
+export { default as mainStore } from './mainStore';
