@@ -3,6 +3,6 @@
  */
 
 export { default as MockCard } from './MockCard';
-export { default as ToolBar } from './ToolBar';
-export { default as SettingPanel } from './SettingPanel';
+export { default as CardSetting } from './CardSetting';
+export { default as LayoutSetting } from './LayoutSetting';
 export { default as FormGroup } from './FormGroup';

@@ -1,9 +1,10 @@
 /**
- * Setting Panel 配置面板
+ * Layout Setting
  */
+
 import React, { Component } from 'react';
 import { Radio } from 'antd';
-import './index.less';
+
 import FormGroup from '../FormGroup';
 import { mainStore } from '../../store';
 
@@ -13,7 +14,8 @@ const optionsWithDisabled = [
   { label: 'Flex', value: 'flex' },
   { label: 'Grid', value: 'grid' },
 ];
-class SettingPanel extends Component {
+
+class LayoutSetting extends Component {
   state = {
     layoutType: 'free',
   };
@@ -32,7 +34,8 @@ class SettingPanel extends Component {
   render() {
     const { layoutType } = this.state;
     return (
-      <div className="settings-panel">
+      <div className="setting-layout">
+        <h3>画布配置</h3>
         <FormGroup name="选择布局" model={this.state.layoutType}>
           <Radio.Group
             options={optionsWithDisabled}
@@ -47,4 +50,4 @@ class SettingPanel extends Component {
   }
 }
 
-export default SettingPanel;
+export default LayoutSetting;

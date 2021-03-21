@@ -5,7 +5,8 @@ import './draggable.less';
 
 import React, { Component } from 'react';
 
-import { MockCard, ToolBar, SettingPanel } from '../widgets';
+import { ToolBar, SideBar } from '../blocks';
+import { MockCard } from '../widgets';
 import { MagicLayout } from '../components';
 import { Row, Col } from 'antd';
 
@@ -29,7 +30,7 @@ class IndexPage extends Component {
     return (
       <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
         <Col flex="300px" className="settings">
-          <SettingPanel></SettingPanel>
+          <SideBar></SideBar>
         </Col>
         <Col flex="auto" className="main">
           <ToolBar></ToolBar>
@@ -37,6 +38,10 @@ class IndexPage extends Component {
           {/* 测试用例在这里 */}
           <div className="platform">
             <MagicLayout layout={layout}>
+              <div
+                className="ant-card"
+                style={{ width: 300, height: 200 }}
+              ></div>
               <MockCard width={300} height={200}></MockCard>
               <MockCard width={300} height={200}></MockCard>
             </MagicLayout>
