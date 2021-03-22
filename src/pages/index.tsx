@@ -39,8 +39,8 @@ class IndexPage extends Component {
           <div className="platform">
             <MagicLayout layout={layout}>
               <div
-                className="ant-card"
-                style={{ width: 300, height: 200 }}
+                className="ant-card demo-card"
+                style={{ width: 300, height: 200, display: 'inline-block' }}
               ></div>
               <MockCard width={300} height={200}></MockCard>
               <MockCard width={300} height={200}></MockCard>

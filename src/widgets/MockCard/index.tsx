@@ -16,17 +16,17 @@ export default function MockCard(props: any) {
   } = props;
   return (
     <div
-      style={style}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       className={'mock-card-container ' + className}
+      style={{ minWidth: props.width, minHeight: props.height, ...style }}
     >
       <Card
         className="mock-card"
         size={props.size}
-        style={{ minWidth: props.width, minHeight: props.height }}
+        style={{ height: '100%', width: '100%' }}
       >
         <Skeleton avatar={props.avatar} paragraph={{ rows: 3 }} />
       </Card>

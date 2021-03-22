@@ -1,0 +1,48 @@
+{
+  "vscodeGitCommit.customAlias": [
+    {
+      "name": "✨ feat",
+      "description": "新功能 / 新组件"
+    },
+    {
+      "name": "🐛 fix",
+      "description": "修复Bug"
+    },
+    {
+      "name": "📝 docs",
+      "description": "文档、说明和注释"
+    },
+    {
+      "name": "💄 style",
+      "description": "样式 / 格式（不影响代码运行的变动）"
+    },
+    {
+      "name": "🔨 refactor",
+      "description": "重构（即不是新增功能，也不是修改bug的代码变动）"
+    },
+    {
+      "name": "🚀 perf",
+      "description": "性能优化"
+    },
+    {
+      "name": "✅ test",
+      "description": "测试"
+    },
+    {
+      "name": "👷 chore",
+      "description": "构建过程或辅助工具的变动"
+    },
+    {
+      "name": "🚧 wip",
+      "description": "工作正在进行中"
+    },
+    {
+      "name": "⏪ revert",
+      "description": "回退"
+    },
+    {
+      "name": "📄 ci",
+      "description": "CICD 的配置以及script文件更改"
+    }
+  ]
+}
