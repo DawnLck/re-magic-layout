@@ -19,7 +19,8 @@
 6. [ ] HOC
    1. [ ] HOC 抽离 react-draggable 的限制逻辑，形成高阶组件 withDraggable
    2. [ ] HOC 抽离 FormGroup的逻辑，形成 withLabel
-7. 其他待定....
+7. 之前实现的时候随便找了一个库实现代码语法高亮，看了一下[react-syntax-highlighter](https://www.npmjs.com/package/react-syntax-highlighter)的趋势较高，后面改到这个来完成语法高亮的精细化
+8. 其他待定....
 
 
 

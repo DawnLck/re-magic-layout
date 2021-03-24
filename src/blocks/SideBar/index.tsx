@@ -8,21 +8,26 @@ import { BasicTab, ConfigTab } from './tabs';
 
 const { TabPane } = Tabs;
 
-function onTabsChange(key: string) {
-  console.log(key);
-}
-
 class SideBar extends Component {
   state = {
     layoutType: 'free',
+    config: '',
+  };
+
+  onTabsChange = (key: string) => {
+    console.log(key);
+    if (key === '2') {
+      this.setState({ config: window.localStorage.getItem('currConfig') });
+    }
   };
 
   render() {
+    const { config } = this.state;
     return (
       <div className="settings-panel">
         <Tabs
           defaultActiveKey="1"
-          onChange={onTabsChange}
+          onChange={this.onTabsChange}
           // type="card"
           size="small"
           centered
@@ -31,7 +36,7 @@ class SideBar extends Component {
             <BasicTab></BasicTab>
           </TabPane>
           <TabPane tab="状态" key="2">
-            <ConfigTab></ConfigTab>
+            <ConfigTab data={config}></ConfigTab>
           </TabPane>
         </Tabs>
       </div>

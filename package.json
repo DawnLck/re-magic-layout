@@ -28,6 +28,7 @@
     "@umijs/preset-react": "1.x",
     "antd": "^4.14.0",
     "react-draggable": "^4.4.3",
+    "react-highlight": "^0.14.0",
     "redux": "^4.0.5",
     "umi": "^3.4.2"
   },

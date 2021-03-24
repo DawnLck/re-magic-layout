@@ -1,8 +1,17 @@
+/**
+ * Tab - Config
+ */
 import React, { Component } from 'react';
+import HighLight from 'react-highlight';
 
-class ConfigTab extends Component {
+interface ConfigTabProp {
+  data: string;
+}
+class ConfigTab extends Component<ConfigTabProp> {
+  componentDidMount() {}
   render() {
-    return <div></div>;
+    const { data } = this.props;
+    return <HighLight language="json">{data}</HighLight>;
   }
 }
 
