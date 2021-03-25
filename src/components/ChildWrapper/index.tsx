@@ -10,9 +10,10 @@ interface ChildWrapperProps {
   className: string | undefined;
   width?: number;
   height?: number;
+  handleClick: any;
+  selected: boolean;
 }
 interface ChildWrapperState {
-  selected: boolean;
   width?: number;
   height?: number;
 }
@@ -25,15 +26,10 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      selected: false,
       width: 300,
       height: 200,
     };
   }
-
-  selectChild = () => {
-    this.setState({ selected: true });
-  };
 
   initSize = () => {
     const { width, height } = this.props;
@@ -48,12 +44,12 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   }
 
   render() {
-    const { children, className } = this.props;
-    const { width, height, selected } = this.state;
+    const { children, className, handleClick, selected } = this.props;
+    const { width, height } = this.state;
     return (
       <Dragbble bounds="parent">
         <div
-          onClick={this.selectChild}
+          onClick={handleClick}
           className={classNames(className, {
             'layout-child': true,
             selected: selected,

@@ -18,19 +18,32 @@ export default class MagicLayout extends PureComponent<MagicLayoutProps> {
   config: any = null;
   state = {
     activeDrags: 0,
+    activeChild: null,
+    layout: 'free',
+  };
+
+  onChildrenClick = (key: string | number | null) => {
+    this.setState({
+      activeChild: key,
+    });
+    console.log('activeKey: ', key);
   };
 
   /** LifeCycle Hooks */
   componentDidUpdate() {
-    buildConfig(this.props);
+    this.config = buildConfig(this.props);
   }
 
   componentDidMount() {
-    buildConfig(this.props);
+    const { layout } = this.props;
+    this.setState({ layout });
+    this.config = buildConfig(this.props);
   }
 
   render() {
     const { children, layout } = this.props;
+
+    const { activeChild } = this.state;
 
     return (
       <div
@@ -39,7 +52,7 @@ export default class MagicLayout extends PureComponent<MagicLayoutProps> {
         }}
         className={classNames(['re-magic-layout', `layout-${layout}`])}
       >
-        {wrapChildren(children)}
+        {wrapChildren(children, activeChild, this.onChildrenClick)}
       </div>
     );
   }

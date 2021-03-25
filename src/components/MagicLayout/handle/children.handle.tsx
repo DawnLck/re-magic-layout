@@ -19,7 +19,12 @@ export interface wrapProps {
  * checkElement
  * @description 对单个元素进行操作，完成元素包裹
  */
-export const checkElement = (ele: any, key: number) => {
+export const checkElement = (
+  ele: any,
+  key: number,
+  selected: boolean,
+  handleChildrenClick: any,
+) => {
   if (!isValidElement(ele)) return ele;
 
   const {
@@ -33,7 +38,16 @@ export const checkElement = (ele: any, key: number) => {
   const height = (style && style.height) || propHeight;
 
   const wrappedChild = (
-    <ChildWrapper className={className} width={width} height={height} key={key}>
+    <ChildWrapper
+      className={className}
+      width={width}
+      height={height}
+      key={key}
+      selected={selected}
+      handleClick={() => {
+        handleChildrenClick(key);
+      }}
+    >
       {ele}
     </ChildWrapper>
   );
@@ -44,12 +58,21 @@ export const checkElement = (ele: any, key: number) => {
  * wrapChildren
  * @description 区分children的类型，主要是区分数组还是单个元素
  */
-export const wrapChildren = (children: ReactNode) => {
+export const wrapChildren = (
+  children: ReactNode,
+  selectedKey: any,
+  handleChildrenClick: any,
+) => {
   if (Array.isArray(children)) {
     return children.map((child, index) => {
-      return checkElement(child, index);
+      return checkElement(
+        child,
+        index,
+        index === selectedKey,
+        handleChildrenClick,
+      );
     });
   } else {
-    return checkElement(children, 1);
+    return checkElement(children, 1, selectedKey === 1, handleChildrenClick);
   }
 };
