@@ -1,0 +1,36 @@
+/**
+* 布局内子元素的基本样式
+*/
+@import '../../styles/common.less';
+
+@color-child-hover-bg: #73aae533;
+@color-child-border: #3f95fd;
+
+.layout-child {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  &::before {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    .fillWh();
+    border: 0px dashed @color-child-border;
+  }
+  &:hover {
+    &::before {
+      border-width: 1px;
+      // background-color: @color-child-hover-bg;
+      z-index: 10;
+    }
+  }
+  &.selected {
+    &::before {
+      border: 2px solid @color-child-border;
+      z-index: 99;
+    }
+  }
+}
