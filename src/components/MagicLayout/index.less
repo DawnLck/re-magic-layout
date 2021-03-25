@@ -2,20 +2,8 @@
 
 @name: re-magic-layout;
 @color-grey: #ccc;
-@color-child-hover-bg: rgba(115, 170, 229, 0.2);
-@color-child-border: #3f95fd;
 
-// 填充容器
-.fillWh {
-  width: 100%;
-  height: 100%;
-}
-
-// 清除换行符或者其他字符造成的间隙问题
-.clearCharGap {
-  font-size: 0;
-  letter-spacing: -3px;
-}
+@import '../../styles/common.less';
 
 .GridBackground {
   background: linear-gradient(90deg, rgba(60, 10, 30, 0.1) 3%, transparent 0),
@@ -39,6 +27,7 @@
 // 切换不同布局
 .layout {
   &-free {
+    display: block;
   }
   &-float {
     .layout-child {
@@ -53,28 +42,6 @@
     .layout-child {
       flex: auto;
       transform: none !important;
-    }
-  }
-}
-
-// 布局内子元素的基本样式
-.layout-child {
-  position: relative;
-  vertical-align: top;
-  &::before {
-    display: block;
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    .fillWh();
-    border: 0px dashed @color-child-border;
-  }
-  &:hover {
-    &::before {
-      border-width: 1px;
-      // background-color: @color-child-hover-bg;
-      z-index: 10;
     }
   }
 }

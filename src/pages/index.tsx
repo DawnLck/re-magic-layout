@@ -11,7 +11,6 @@ import { MagicLayout } from '../components';
 import { Row, Col } from 'antd';
 
 import { mainStore } from '../store';
-import store from '@/store/mainStore';
 
 class IndexPage extends Component {
   state = {
