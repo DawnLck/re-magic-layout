@@ -22,14 +22,15 @@ export const isFunction = (target: any): boolean => {
   return checkObjectType(target, 'Function');
 };
 
-export const classNames = (target: any) => {
-  if (isObject(target)) {
-    return Object.entries(target)
-      .filter((item) => item[1])
-      .map((item) => item[0])
-      .join(' ');
-  } else if (isArray(target)) {
-    return target.join(' ').trim();
-  }
-  return target;
+export const classNames = (...props: any[]) => {
+  return props.reduce((prev, curr) => {
+    if (isObject(curr)) {
+      return Object.entries(curr)
+        .filter((item) => item[1])
+        .map((item) => item[0])
+        .join(' ');
+    } else if (isArray(curr)) {
+      return curr.join(' ').trim();
+    }
+  }, '');
 };
