@@ -32,6 +32,16 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
     });
   };
 
+  unsetLayout = () => {
+    this.setState({
+      activeChild: {
+        uid: null,
+        width: 0,
+        height: 0,
+      },
+    });
+  };
+
   /** LifeCycle Hooks */
   componentDidUpdate() {
     this.config = buildConfig(this.props);
@@ -59,6 +69,7 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
           this.element = element;
         }}
         className={classNames(['re-magic-layout', `layout-${layout}`])}
+        onClick={this.unsetLayout}
       >
         {wrapChildren(children, activeChild.uid, this.onChildrenClick)}
       </div>
