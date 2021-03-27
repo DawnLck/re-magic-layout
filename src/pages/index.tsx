@@ -56,7 +56,7 @@ class IndexPage extends Component {
               ></div>
               <MockCard width={300} height={200}></MockCard>
               <MockCard uid="uid_test_001" width={300} height={200}></MockCard>
-              <MockCard width={1200} height={200}></MockCard>
+              <MockCard width={800} height={200}></MockCard>
             </MagicLayout>
           </div>
         </Col>
