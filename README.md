@@ -9,18 +9,23 @@
    2. [x] Flex
    3. [x] 栅格系统
 
-## 待完成功能 🏗️
+## 1.0 版本待完成功能 🏗️
 
 1. [ ] 元素的常见配置设计：宽高、层级...
 2. [ ] 元素的拖拉调整宽高功能
 3. [ ] 单个元素的辅助线功能（完善画布的模式选择部分，包含初始化、网格、参考线）
-4. [ ] 多选(支持多选移动、删除)
-5. [ ] 矩形重叠检测（强制不让卡片重叠）
-6. [ ] HOC
-   1. [ ] HOC 抽离 react-draggable 的限制逻辑，形成高阶组件 withDraggable
-   2. [ ] HOC 抽离 FormGroup的逻辑，形成 withLabel
-7. 之前实现的时候随便找了一个库实现代码语法高亮，看了一下[react-syntax-highlighter](https://www.npmjs.com/package/react-syntax-highlighter)的趋势较高，后面改到这个来完成语法高亮的精细化
-8. 其他待定....
+4. [ ] 之前实现的时候随便找了一个库实现代码语法高亮，看了一下[react-syntax-highlighter](https://www.npmjs.com/package/react-syntax-highlighter)的趋势较高，后面改到这个来完成语法高亮的精细化
 
+## 2.0 大版本规划 🚀
 
-
+1. 多选(支持多选移动、删除)
+2. 矩形重叠检测（强制不让卡片重叠）
+3. 画布的工具栏
+   - 无限画布
+   - 缩放能力
+   - 拖拽画布能力
+   - EagleView 鹰眼图
+   - to be continued
+4. Flex布局的完善
+5. 允许嵌套的容器Container
+6. 子元素自动分组算法
