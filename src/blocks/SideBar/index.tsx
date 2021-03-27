@@ -7,8 +7,10 @@ import { Divider, Tabs } from 'antd';
 import { BasicTab, ConfigTab } from './tabs';
 
 const { TabPane } = Tabs;
-
-class SideBar extends Component {
+interface SideBarProps {
+  state: any;
+}
+class SideBar extends Component<SideBarProps> {
   state = {
     layoutType: 'free',
     config: '',
@@ -23,6 +25,7 @@ class SideBar extends Component {
 
   render() {
     const { config } = this.state;
+    const { state } = this.props;
     return (
       <div className="settings-panel">
         <Tabs
@@ -33,7 +36,7 @@ class SideBar extends Component {
           centered
         >
           <TabPane tab="基础" key="1">
-            <BasicTab></BasicTab>
+            <BasicTab state={state}></BasicTab>
           </TabPane>
           <TabPane tab="状态" key="2">
             <ConfigTab data={config}></ConfigTab>

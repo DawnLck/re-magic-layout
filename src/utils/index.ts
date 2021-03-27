@@ -34,3 +34,15 @@ export const classNames = (...props: any[]) => {
     }
   }, '');
 };
+
+export const debounce = (fn: (...args: any) => any, delay: number = 1000) => {
+  let timeHandler: any = null;
+  return (...args: any) => {
+    let that = this;
+    if (timeHandler) clearTimeout(timeHandler);
+    timeHandler = setTimeout(() => {
+      fn.apply(that, args);
+      clearTimeout(timeHandler);
+    }, delay);
+  };
+};

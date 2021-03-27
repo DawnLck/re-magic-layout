@@ -8,11 +8,13 @@ import { isValidElement, ReactNode } from 'react';
 import ChildWrapper from '../../ChildWrapper';
 
 export interface wrapProps {
+  key: number;
   style?: any;
   className?: string;
   width?: any;
   height?: any;
-  key: number;
+  uid?: number | string;
+  'data-uid'?: number | string;
 }
 
 /**
@@ -22,7 +24,7 @@ export interface wrapProps {
 export const checkElement = (
   ele: any,
   key: number,
-  selected: boolean,
+  selectedKey: any,
   handleChildrenClick: any,
 ) => {
   if (!isValidElement(ele)) return ele;
@@ -30,10 +32,13 @@ export const checkElement = (
   const {
     className,
     style,
+    uid,
     width: propWidth,
     height: propHeight,
+    'data-uid': dataUID,
   } = ele.props as wrapProps;
 
+  const uniqueKey = uid || dataUID || key;
   const width = (style && style.width) || propWidth;
   const height = (style && style.height) || propHeight;
 
@@ -43,10 +48,9 @@ export const checkElement = (
       width={width}
       height={height}
       key={key}
-      selected={selected}
-      handleClick={() => {
-        handleChildrenClick(key);
-      }}
+      uid={uniqueKey}
+      selected={selectedKey === uniqueKey}
+      handleClick={handleChildrenClick}
     >
       {ele}
     </ChildWrapper>
@@ -65,14 +69,9 @@ export const wrapChildren = (
 ) => {
   if (Array.isArray(children)) {
     return children.map((child, index) => {
-      return checkElement(
-        child,
-        index,
-        index === selectedKey,
-        handleChildrenClick,
-      );
+      return checkElement(child, index, selectedKey, handleChildrenClick);
     });
   } else {
-    return checkElement(children, 1, selectedKey === 1, handleChildrenClick);
+    return checkElement(children, 1, selectedKey, handleChildrenClick);
   }
 };

@@ -15,34 +15,47 @@ import { mainStore } from '../store';
 class IndexPage extends Component {
   state = {
     layout: 'free',
+    activeChild: {
+      uid: null,
+    },
   };
   componentDidMount() {
+    // const { layout: oldLayout } = this.state;
+
     mainStore.subscribe(() => {
-      const { layout } = mainStore.getState();
+      const { layout: newLayout } = mainStore.getState();
       this.setState({
-        layout,
+        layout: newLayout,
       });
     });
   }
+  hanldeStateChange = (data: any) => {
+    console.log('State Change', data);
+    const { activeChild } = data;
+    const { layout } = this.state;
+
+    this.setState({ layout, activeChild });
+  };
   render() {
     const { layout } = this.state;
     return (
       <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
         <Col flex="300px" className="settings">
-          <SideBar></SideBar>
+          <SideBar state={this.state}></SideBar>
         </Col>
         <Col flex="auto" className="main">
           <ToolBar></ToolBar>
 
           {/* 测试用例在这里 */}
           <div className="platform">
-            <MagicLayout layout={layout}>
+            <MagicLayout layout={layout} onStateChange={this.hanldeStateChange}>
               <div
                 className="ant-card demo-card"
+                data-uid="uid_test_007"
                 style={{ width: 400, height: 300, display: 'inline-block' }}
               ></div>
               <MockCard width={300} height={200}></MockCard>
-              <MockCard width={300} height={200}></MockCard>
+              <MockCard uid="uid_test_001" width={300} height={200}></MockCard>
               <MockCard width={1200} height={200}></MockCard>
             </MagicLayout>
           </div>

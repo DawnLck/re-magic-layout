@@ -38,6 +38,7 @@ MockCard.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   avatar: PropTypes.bool,
+  uid: PropTypes.string,
 };
 
 MockCard.defaultProps = {

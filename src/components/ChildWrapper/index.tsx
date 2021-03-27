@@ -2,9 +2,10 @@
  * ChildWrapper
  */
 import React, { Component, cloneElement } from 'react';
-import { classNames } from '@/utils';
-import './index.less';
 import Dragbble from 'react-draggable';
+import { classNames } from '@/utils';
+
+import './index.less';
 
 interface ChildWrapperProps {
   className: string | undefined;
@@ -12,6 +13,7 @@ interface ChildWrapperProps {
   height?: number;
   handleClick: any;
   selected: boolean;
+  uid: any;
 }
 interface ChildWrapperState {
   width?: number;
@@ -25,9 +27,17 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   };
   constructor(props: any) {
     super(props);
+
+    const { children } = this.props;
+
+    const { style, width: propWidth, height: propHeight } = children as any;
+
+    const width = (style && style.width) || propWidth;
+    const height = (style && style.height) || propHeight;
+
     this.state = {
-      width: 300,
-      height: 200,
+      width,
+      height,
     };
   }
 
@@ -39,17 +49,42 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     });
   };
 
+  changeSize = (width: any, height: any) => {
+    // console.log('ChangeSize: ', { width, height });
+    this.setState({
+      width,
+      height,
+    });
+  };
+
+  handleClick = () => {
+    const { uid } = this.props;
+    const { width, height } = this.state;
+    const data = {
+      uid,
+      node: {
+        width,
+        height,
+      },
+      ele: this,
+    };
+
+    // console.log('Child Click: ', data);
+
+    this.props.handleClick(data);
+  };
+
   componentDidMount() {
     this.initSize();
   }
 
   render() {
-    const { children, className, handleClick, selected } = this.props;
+    const { children, className, selected } = this.props;
     const { width, height } = this.state;
     return (
       <Dragbble bounds="parent">
         <div
-          onClick={handleClick}
+          onClick={this.handleClick}
           className={classNames(className, {
             'layout-child': true,
             selected: selected,

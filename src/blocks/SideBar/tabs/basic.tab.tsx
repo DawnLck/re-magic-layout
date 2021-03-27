@@ -3,16 +3,20 @@
  */
 
 import React, { Component } from 'react';
-import { LayoutSetting, CardSetting } from '@/widgets';
+import { LayoutSetting, ChildSetting } from '@/widgets';
 import { Divider } from 'antd';
 
-class BasicTab extends Component {
+interface BasicTabProps {
+  state: any;
+}
+class BasicTab extends Component<BasicTabProps> {
   render() {
+    const { activeChild } = this.props.state;
     return (
       <div className="tab-basic">
         <LayoutSetting />
         <Divider />
-        <CardSetting />
+        <ChildSetting child={activeChild} />
       </div>
     );
   }
