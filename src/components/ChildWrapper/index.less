@@ -3,14 +3,16 @@
 */
 @import '../../styles/common.less';
 
-@color-child-hover-bg: #73aae533;
-@color-child-border: #3f95fd;
+@color-child-hover-bg: rgba(24, 144, 255, 0.86);
+@color-child-selected-border: #3f95fd;
+@color-border: #f2f2f2;
 
 .layout-child {
   position: relative;
   display: inline-block;
   vertical-align: top;
   box-sizing: border-box;
+  border: 0px solid @color-border;
   overflow: hidden;
   &::before {
     display: block;
@@ -19,11 +21,11 @@
     top: 0;
     left: 0;
     .fillWh();
-    border: 0px dashed @color-child-border;
+    border: 0px dashed @color-child-hover-bg;
   }
   &:hover {
     &::before {
-      border-width: 1px;
+      border-width: 2px;
       // background-color: @color-child-hover-bg;
       z-index: 10;
     }
@@ -31,7 +33,7 @@
   &.selected {
     z-index: 900;
     &::before {
-      border: 2px solid @color-child-border;
+      border: 2px solid @color-child-selected-border;
       z-index: 999;
     }
   }

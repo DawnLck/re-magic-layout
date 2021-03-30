@@ -39,14 +39,12 @@ export const checkElement = (
   } = ele.props as wrapProps;
 
   const uniqueKey = uid || dataUID || key;
-  const width = (style && style.width) || propWidth;
-  const height = (style && style.height) || propHeight;
+  // const width = (style && style.width) || propWidth;
+  // const height = (style && style.height) || propHeight;
 
   const wrappedChild = (
     <ChildWrapper
       className={className}
-      width={width}
-      height={height}
       key={key}
       uid={uniqueKey}
       selected={selectedKey === uniqueKey}
