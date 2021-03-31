@@ -5,6 +5,8 @@ import './index.less';
 import PropTypes from 'prop-types';
 import { Skeleton, Card } from 'antd';
 
+import { classNames } from '@/utils';
+
 export default function MockCard(props: any) {
   const {
     className,
@@ -20,8 +22,8 @@ export default function MockCard(props: any) {
       onMouseUp={onMouseUp}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      className={'mock-card-container ' + className}
-      style={{ minWidth: props.width, minHeight: props.height, ...style }}
+      className={classNames(['mock-card-container', className])}
+      style={{ width: props.width, height: props.height, ...style }}
     >
       <Card
         className="mock-card"
