@@ -4,16 +4,21 @@
 @import '../../styles/common.less';
 
 @color-child-hover-bg: rgba(24, 144, 255, 0.86);
-@color-child-selected-border: #3f95fd;
+@color-child-selected-border: @color-primary;
 @color-border: #f2f2f2;
 
+@z-index-selected: 600;
+@z-index-selected-border: 666;
+@z-index-resize: 800;
+
+// 样式主体
 .layout-child {
   position: relative;
   display: inline-block;
   vertical-align: top;
   box-sizing: border-box;
   border: 0px solid @color-border;
-  overflow: hidden;
+  // overflow: hidden;
   &::before {
     display: block;
     content: '';
@@ -26,15 +31,106 @@
   &:hover {
     &::before {
       border-width: 2px;
-      // background-color: @color-child-hover-bg;
       z-index: 10;
     }
   }
   &.selected {
-    z-index: 900;
+    z-index: @z-index-selected;
     &::before {
       border: 2px solid @color-child-selected-border;
-      z-index: 999;
+      z-index: @z-index-selected-border;
     }
+  }
+}
+
+// Resize 和 Scale(double-resize) 部分
+.layout-child-resize {
+  opacity: 0;
+  &.selected {
+    opacity: 1;
+  }
+  .resize-item {
+    position: absolute;
+    display: inline-block;
+    content: '';
+
+    width: 8px;
+    height: 8px;
+    background-color: @color-primary;
+    z-index: @z-index-resize;
+  }
+
+  .top,
+  .bottom,
+  .right,
+  .left {
+    width: 4px;
+    height: 4px;
+  }
+
+  .top {
+    &,
+    &-left,
+    &-right {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(0%);
+      box-sizing: content-box;
+    }
+    &-left {
+      left: 0;
+      transform: translateX(0%) translateY(0%);
+    }
+    &-right {
+      left: 100%;
+      transform: translateX(-100%) translateY(0%);
+    }
+  }
+  .bottom {
+    &,
+    &-left,
+    &-right {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(0%);
+    }
+    &-left {
+      left: 0;
+      transform: translateX(0%) translateY(0%);
+    }
+    &-right {
+      left: 100%;
+      transform: translateX(-100%) translateY(0%);
+    }
+  }
+  .right {
+    top: 50%;
+    right: 0;
+    transform: translateX(0%) translateY(-50%);
+  }
+  .left {
+    top: 50%;
+    left: 0;
+    transform: translateX(0%) translateY(-50%);
+  }
+
+  // Cursors
+  .right,
+  .left {
+    cursor: ew-resize;
+    height: 24px;
+  }
+  .top,
+  .bottom {
+    cursor: ns-resize;
+    width: 24px;
+  }
+  .top-left,
+  .bottom-right {
+    cursor: nwse-resize;
+  }
+  .top-right,
+  .bottom-left {
+    cursor: nesw-resize;
   }
 }
