@@ -45,15 +45,10 @@ const SettingAttrs = [
 ];
 
 const InputGroup = (props: InputGroupProps) => {
-  const { name, value, onChange, min = 1, max = 2000 } = props;
+  const { name, value, onChange, min = 0, max = 2000 } = props;
   return (
     <FormGroup name={name} isInline={true}>
-      <InputNumber
-        min={min || -1}
-        max={max || 2000}
-        value={value}
-        onChange={onChange}
-      />
+      <InputNumber min={min} max={max} value={value} onChange={onChange} />
     </FormGroup>
   );
 };
