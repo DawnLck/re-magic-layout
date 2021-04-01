@@ -5,13 +5,15 @@ import React, { Component } from 'react';
 import HighLight from 'react-highlight';
 
 interface ConfigTabProp {
-  data: string;
+  data: any;
 }
 class ConfigTab extends Component<ConfigTabProp> {
   componentDidMount() {}
   render() {
     const { data } = this.props;
-    return <HighLight language="json">{data}</HighLight>;
+    return (
+      <HighLight language="json">{JSON.stringify(data, null, 2)}</HighLight>
+    );
   }
 }
 

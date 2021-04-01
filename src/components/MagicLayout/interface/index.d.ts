@@ -3,8 +3,7 @@
  */
 export interface ChildNode {
   uid: string | null;
-  width: number;
-  height: number;
+  state: any;
   ele?: any;
 }
 export interface MagicState {
@@ -13,4 +12,5 @@ export interface MagicState {
 export interface MagicLayoutProps {
   layout: string;
   onStateChange: (state: MagicState) => void;
+  onConfigChange: (config: any) => void;
 }

@@ -19,10 +19,11 @@ interface ChildWrapperProps {
   selected: boolean;
   uid: any;
   border?: number;
-  handleClick: (data: ChildData) => any;
+  handleClick: (data: ChildData) => void;
+  handleStateUpdate: (data: ChildData) => void;
 }
 
-interface ChildWrapperState {
+export interface ChildWrapperState {
   width: number;
   height: number;
   deltaPosition?: {
@@ -33,7 +34,7 @@ interface ChildWrapperState {
   zIndex: number;
 }
 
-type ChildData = {
+export type ChildData = {
   uid: string | number | null;
   state: ChildWrapperState;
   ele: ReactNode;
@@ -74,11 +75,18 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     };
   }
 
-  updateState = (state: any) => {
+  updateState = (state: ChildWrapperState) => {
     this.setState(state);
+    this.props.handleStateUpdate({
+      uid: this.props.uid,
+      state: state,
+      ele: this,
+    });
   };
 
   handleClick = (e: any) => {
+    console.log('[ChildWrapper] HandleClick: ', e);
+
     const { uid } = this.props;
     // const { width, height } = this.state;
     const data = {
@@ -86,8 +94,6 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       state: this.state,
       ele: this,
     };
-
-    // console.log('Child Click: ', e);
 
     this.props.handleClick(data);
 
@@ -138,7 +144,13 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     this.setState({ width: _width, height: _height });
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.handleStateUpdate({
+      uid: this.props.uid,
+      state: this.state,
+      ele: this,
+    });
+  }
 
   render() {
     const { children, className, selected } = this.props;

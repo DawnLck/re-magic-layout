@@ -2,6 +2,24 @@
  * Utils
  */
 
+const COLORS: { [key: string]: string } = {
+  red: '#e98288',
+  green: '#a8cc8c',
+  yellow: '#dbab79',
+  blue: '#357edd',
+  magenta: '#bf83d0',
+  cyan: '#66c2cd',
+};
+
+export const colorLog = (color: string, title: string, value?: any) => {
+  // @ts-ignore
+  console.log(
+    `%c${title}: `,
+    `color: #000; background:${COLORS[color]}`,
+    value,
+  );
+};
+
 function checkObjectType(target: any, type: string) {
   return Object.prototype.toString.call(target) === `[object ${type}]`;
 }

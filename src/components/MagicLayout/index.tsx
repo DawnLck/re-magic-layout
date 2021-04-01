@@ -6,10 +6,12 @@ import React, { Component } from 'react';
 
 import './index.less';
 
-import { classNames } from '@/utils';
+import { classNames, colorLog } from '@/utils';
 import { buildConfig, wrapChildren } from './handle';
 
 import { MagicLayoutProps, MagicState, ChildNode } from './interface';
+
+import { ChildData } from '../ChildWrapper';
 
 export default class MagicLayout extends Component<MagicLayoutProps> {
   static defaultProps = {
@@ -17,19 +19,40 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
   };
 
   element: HTMLDivElement | null = null;
-  config: any = null;
+  config: any = {
+    layout: '',
+    mode: '',
+    children: {},
+  };
+  childrenNodes = [];
   state = {
     activeChild: {
       uid: null,
-      width: 0,
-      height: 0,
+      ele: null,
+      state: null,
     },
   };
 
-  onChildrenClick = (data: ChildNode) => {
+  onChildrenClick = (data: ChildData) => {
     this.setState({
       activeChild: data,
     });
+  };
+
+  configUpdate = () => {
+    this.props.onConfigChange(this.config);
+  };
+
+  onChildStateUpdate = (data: ChildData) => {
+    const { uid, ele, state } = data;
+    const { children } = this.config;
+    if (uid) {
+      children[uid] = state;
+    } else {
+      console.error('该子元素缺少uid', ele);
+      return;
+    }
+    console.log('[MagicLayout]: Child State Update', this.config);
   };
 
   unsetLayout = () => {
@@ -44,7 +67,8 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
 
   /** LifeCycle Hooks */
   componentDidUpdate() {
-    this.config = buildConfig(this.props);
+    colorLog('red', `[MagicLayout]`, `Did Update`);
+    // this.config = buildConfig(this.props);
     const { onStateChange } = this.props;
     onStateChange(this.state);
   }
@@ -56,7 +80,8 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
   }
 
   componentDidMount() {
-    this.config = buildConfig(this.props);
+    // this.config = buildConfig(this.props);
+    this.config.layout = this.props.layout;
   }
 
   render() {
@@ -71,7 +96,12 @@ export default class MagicLayout extends Component<MagicLayoutProps> {
         className={classNames(['re-magic-layout', `layout-${layout}`])}
         onClick={this.unsetLayout}
       >
-        {wrapChildren(children, activeChild.uid, this.onChildrenClick)}
+        {wrapChildren(
+          children,
+          activeChild.uid,
+          this.onChildrenClick,
+          this.onChildStateUpdate,
+        )}
       </div>
     );
   }

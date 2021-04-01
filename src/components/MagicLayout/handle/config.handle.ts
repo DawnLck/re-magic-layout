@@ -20,6 +20,8 @@ export function updateLocalConfig(data: any) {
 export function buildConfig(props: any): any {
   const { layout, children } = props;
 
+  console.log(children);
+
   const childrenConfig = (children as any).map((element: any) => {
     const childConfig = getConfigFromChildElement(element);
     return childConfig;

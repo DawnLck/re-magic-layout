@@ -9,6 +9,7 @@ import { BasicTab, ConfigTab } from './tabs';
 const { TabPane } = Tabs;
 interface SideBarProps {
   state: any;
+  config: any;
 }
 class SideBar extends Component<SideBarProps> {
   state = {
@@ -17,9 +18,13 @@ class SideBar extends Component<SideBarProps> {
   };
 
   onTabsChange = (key: string) => {
-    console.log(key);
+    // console.log(this.props.config);
     if (key === '2') {
-      this.setState({ config: window.localStorage.getItem('currConfig') });
+      const { config } = this.props;
+      if (config?.current?.config) {
+        this.setState({ config: config.current.config });
+      }
+      // this.setState({ config: window.localStorage.getItem('currConfig') });
     }
   };
 

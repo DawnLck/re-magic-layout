@@ -3,7 +3,7 @@
 import './index.less';
 import './draggable.less';
 
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 
 import { ToolBar, SideBar } from '../blocks';
 import { MockCard } from '../widgets';
@@ -12,13 +12,20 @@ import { Row, Col } from 'antd';
 
 import { mainStore } from '../store';
 
-class IndexPage extends Component {
-  state = {
-    layout: 'free',
-    activeChild: {
-      uid: null,
-    },
-  };
+class IndexPage extends Component<any, any> {
+  public magicLayoutRef: any;
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      layout: 'free',
+      activeChild: {
+        uid: null,
+      },
+    };
+    this.magicLayoutRef = createRef();
+  }
+
+  config = null;
   componentDidMount() {
     // const { layout: oldLayout } = this.state;
 
@@ -30,25 +37,33 @@ class IndexPage extends Component {
     });
   }
   hanldeStateChange = (data: any) => {
-    console.log('State Change', data);
+    console.log('[Pages]: State Change', data);
     const { activeChild } = data;
     const { layout } = this.state;
 
     this.setState({ layout, activeChild });
+  };
+  handleConfigChange = (config: any) => {
+    this.setState({ config });
   };
   render() {
     const { layout } = this.state;
     return (
       <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
         <Col flex="300px" className="settings">
-          <SideBar state={this.state}></SideBar>
+          <SideBar state={this.state} config={this.magicLayoutRef}></SideBar>
         </Col>
         <Col flex="auto" className="main">
           <ToolBar></ToolBar>
 
           {/* 测试用例在这里 */}
           <div className="platform">
-            <MagicLayout layout={layout} onStateChange={this.hanldeStateChange}>
+            <MagicLayout
+              ref={this.magicLayoutRef}
+              layout={layout}
+              onStateChange={this.hanldeStateChange}
+              onConfigChange={this.handleConfigChange}
+            >
               <div
                 className="ant-card demo-card"
                 data-uid="uid_test_007"

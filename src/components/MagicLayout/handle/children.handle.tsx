@@ -5,7 +5,7 @@
 
 import { isValidElement, ReactNode } from 'react';
 
-import ChildWrapper from '../../ChildWrapper';
+import ChildWrapper, { ChildData } from '../../ChildWrapper';
 
 export interface wrapProps {
   key: number;
@@ -25,22 +25,14 @@ export const checkElement = (
   ele: any,
   key: number,
   selectedKey: any,
-  handleChildrenClick: any,
+  handleChildrenClick: (data: ChildData) => void,
+  handleChildStateUpdate: (data: ChildData) => void,
 ) => {
   if (!isValidElement(ele)) return ele;
 
-  const {
-    className,
-    style,
-    uid,
-    width: propWidth,
-    height: propHeight,
-    'data-uid': dataUID,
-  } = ele.props as wrapProps;
+  const { className, uid, 'data-uid': dataUID } = ele.props as wrapProps;
 
-  const uniqueKey = uid || dataUID || key;
-  // const width = (style && style.width) || propWidth;
-  // const height = (style && style.height) || propHeight;
+  const uniqueKey = `child_${uid || dataUID || key}`;
 
   const wrappedChild = (
     <ChildWrapper
@@ -49,6 +41,7 @@ export const checkElement = (
       uid={uniqueKey}
       selected={selectedKey === uniqueKey}
       handleClick={handleChildrenClick}
+      handleStateUpdate={handleChildStateUpdate}
     >
       {ele}
     </ChildWrapper>
@@ -63,13 +56,26 @@ export const checkElement = (
 export const wrapChildren = (
   children: ReactNode,
   selectedKey: any,
-  handleChildrenClick: any,
+  handleChildrenClick: (data: ChildData) => void,
+  handleChildStateUpdate: (data: ChildData) => void,
 ) => {
   if (Array.isArray(children)) {
     return children.map((child, index) => {
-      return checkElement(child, index, selectedKey, handleChildrenClick);
+      return checkElement(
+        child,
+        index,
+        selectedKey,
+        handleChildrenClick,
+        handleChildStateUpdate,
+      );
     });
   } else {
-    return checkElement(children, 1, selectedKey, handleChildrenClick);
+    return checkElement(
+      children,
+      1,
+      selectedKey,
+      handleChildrenClick,
+      handleChildStateUpdate,
+    );
   }
 };

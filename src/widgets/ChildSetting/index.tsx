@@ -53,6 +53,15 @@ const InputGroup = (props: InputGroupProps) => {
   );
 };
 
+const PlainTextGroup = (props: { name: string; value: string | number }) => {
+  const { name, value } = props;
+  return (
+    <FormGroup name={name} isInline={true}>
+      <span className="form-group-plain">{value}</span>
+    </FormGroup>
+  );
+};
+
 class CardSetting extends Component<CardSettingProps, CardSettingState> {
   constructor(props: any) {
     super(props);
@@ -71,17 +80,6 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
       },
       zIndex: 0,
     };
-
-    // if (ele) {
-    //   const { width, height, border, deltaPosition, zIndex } = state;
-    //   initState = {
-    //     width,
-    //     height,
-    //     border,
-    //     deltaPosition,
-    //     zIndex,
-    //   };
-    // }
 
     this.state = initState;
   }
@@ -111,6 +109,7 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
   };
 
   onAttrChange = (attr: string, value: any) => {
+    // console.log('onAttrChange', target);
     let { child } = this.props;
     const newState = Object.fromEntries([[attr, value]]);
     child.ele.updateState(newState);
@@ -133,12 +132,20 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
               key={name}
               name={name}
               value={state[key]}
-              onChange={(e) => {
-                this.onAttrChange(key, e);
+              onChange={(v) => {
+                this.onAttrChange(name, v);
               }}
             ></InputGroup>
           );
         })}
+        <PlainTextGroup
+          name="deltaX"
+          value={state.deltaPosition.x}
+        ></PlainTextGroup>
+        <PlainTextGroup
+          name="deltaY"
+          value={state.deltaPosition.y}
+        ></PlainTextGroup>
       </div>
     );
   }
