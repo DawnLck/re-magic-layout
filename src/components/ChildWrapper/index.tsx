@@ -2,14 +2,13 @@
  * ChildWrapper
  */
 import React, { Component, cloneElement, ReactNode } from 'react';
-import Dragbble, {
-  DraggableData,
-  DraggableCore,
-  DraggableEvent,
-} from 'react-draggable';
-import { classNames, camelToLine } from '@/utils';
+import Dragbble, { DraggableData, DraggableEvent } from 'react-draggable';
+
+import { classNames } from '@/utils';
 
 import './index.less';
+
+import ResizeAnchors from '../ResizeAnchors';
 
 interface ChildWrapperProps {
   className: string | undefined;
@@ -39,10 +38,6 @@ export type ChildData = {
   state: ChildWrapperState;
   ele: ReactNode;
 };
-
-const ResizeTypes = ['top', 'right', 'bottom', 'left'];
-
-const ScaleTypes = ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
 
 class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   static defaultProps = {
@@ -115,35 +110,6 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     // Drag 会触发一次Click事件，形成事件的上传，不过有个地方需要完善，用户如果拖出范围，click事件就会丢失，导致位置没有及时刷新
   };
 
-  /**
-   * 处理resize控制元素点的Drag事件
-   */
-  handleResizeDrag = (e: DraggableEvent, data: DraggableData, type: string) => {
-    // e.stopPropagation();
-    (e as MouseEvent).stopImmediatePropagation();
-    e.preventDefault();
-
-    const { width, height } = this.state;
-    const { deltaX, deltaY } = data;
-    let _width = width,
-      _height = height;
-
-    if (['top', 'bottom'].includes(type)) _height += deltaY;
-    else if (['right', 'left'].includes(type)) _width += deltaX;
-    else if (
-      ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'].includes(type)
-    ) {
-      _width += deltaX;
-      _height += deltaY;
-    } else {
-      console.warn(
-        `Type ${type} is not belong default types like [top, ...., bottomRight]`,
-      );
-    }
-
-    this.setState({ width: _width, height: _height });
-  };
-
   componentDidMount() {
     this.props.handleStateUpdate({
       uid: this.props.uid,
@@ -166,31 +132,23 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
           style={{ width, height, borderWidth: border, zIndex }}
         >
           {cloneElement(children as any, {
+            props: {
+              width: width,
+              height: height,
+            },
             style: {
               width: '100%',
               height: '100%',
             },
           })}
-          <div
-            className={classNames({ 'layout-child-resize': true, selected })}
-          >
-            {[...ResizeTypes, ...ScaleTypes].map((item) => {
-              return (
-                <DraggableCore
-                  onDrag={(e, v) => {
-                    this.handleResizeDrag(e, v, item);
-                  }}
-                  key={item}
-                >
-                  <div
-                    className={classNames(['resize-item', camelToLine(item)])}
-                  >
-                    {item}
-                  </div>
-                </DraggableCore>
-              );
-            })}
-          </div>
+          <ResizeAnchors
+            width={width}
+            height={height}
+            show={selected}
+            onChange={(width, height) => {
+              this.setState({ width, height });
+            }}
+          ></ResizeAnchors>
         </div>
       </Dragbble>
     );
