@@ -11,11 +11,11 @@ import './index.less';
 import ResizeAnchors from '../ResizeAnchors';
 
 interface ChildWrapperProps {
-  className: string | undefined;
+  className?: string;
   width?: number;
   height?: number;
 
-  selected: boolean;
+  selected?: boolean;
   uid: any;
   border?: number;
   handleClick: (data: ChildData) => void;
@@ -34,7 +34,7 @@ export interface ChildWrapperState {
 }
 
 export type ChildData = {
-  uid: string | number | null;
+  key: string | number | null;
   state: ChildWrapperState;
   ele: ReactNode;
 };
@@ -73,7 +73,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   updateState = (state: ChildWrapperState) => {
     this.setState(state);
     this.props.handleStateUpdate({
-      uid: this.props.uid,
+      key: this.props.uid,
       state: state,
       ele: this,
     });
@@ -82,12 +82,12 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   handleClick = (e: any) => {
     console.log('[ChildWrapper] HandleClick: ', e);
 
-    const { uid } = this.props;
+    // const { key } = this.props;
     // const { width, height } = this.state;
     const data = {
-      uid,
+      key: this.props.uid,
       state: this.state,
-      ele: this,
+      ele: e.target,
     };
 
     this.props.handleClick(data);
@@ -112,7 +112,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
 
   componentDidMount() {
     this.props.handleStateUpdate({
-      uid: this.props.uid,
+      key: this.props.uid,
       state: this.state,
       ele: this,
     });

@@ -8,6 +8,7 @@ export interface ChildNode {
 }
 export interface MagicState {
   activeChild: ChildNode;
+  selects: [string];
 }
 export interface MagicLayoutProps {
   layout: string;

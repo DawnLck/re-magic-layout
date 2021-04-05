@@ -6,11 +6,12 @@ import './draggable.less';
 import React, { Component, createRef } from 'react';
 
 import { ToolBar, SideBar } from '../blocks';
-import { MockCard } from '../widgets';
-import { MagicLayout } from '../components';
 import { Row, Col } from 'antd';
+import { MockCard } from '../widgets';
 
-import { mainStore } from '../store';
+// import { mainStore } from '../store';
+
+import { MagicLayout, ChildWrapper } from '../components';
 
 class IndexPage extends Component<any, any> {
   public magicLayoutRef: any;
@@ -28,13 +29,12 @@ class IndexPage extends Component<any, any> {
   config = null;
   componentDidMount() {
     // const { layout: oldLayout } = this.state;
-
-    mainStore.subscribe(() => {
-      const { layout: newLayout } = mainStore.getState();
-      this.setState({
-        layout: newLayout,
-      });
-    });
+    // mainStore.subscribe(() => {
+    //   const { layout: newLayout } = mainStore.getState();
+    //   this.setState({
+    //     layout: newLayout,
+    //   });
+    // });
   }
   hanldeStateChange = (data: any) => {
     console.log('[Pages]: State Change', data);
@@ -67,11 +67,17 @@ class IndexPage extends Component<any, any> {
               <div
                 className="ant-card demo-card"
                 data-uid="uid_test_007"
-                style={{ width: 400, height: 300, display: 'inline-block' }}
+                style={{ width: 80, height: 60, display: 'inline-block' }}
               ></div>
-              <MockCard width={300} height={200}></MockCard>
-              <MockCard uid="uid_test_001" width={300} height={200}></MockCard>
-              <MockCard width={800} height={200}></MockCard>
+
+              <div
+                className="ant-card demo-card"
+                data-uid="uid_test_001"
+                style={{ width: 100, height: 120, display: 'inline-block' }}
+              ></div>
+              {/* <MockCard width={80} height={40}></MockCard> */}
+              {/* <MockCard uid="uid_test_001" width={300} height={200}></MockCard> */}
+              {/* <MockCard width={800} height={200}></MockCard> */}
             </MagicLayout>
           </div>
         </Col>
