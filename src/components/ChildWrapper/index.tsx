@@ -1,7 +1,12 @@
 /**
  * ChildWrapper
  */
-import React, { Component, cloneElement, ReactNode } from 'react';
+import React, {
+  Component,
+  cloneElement,
+  ReactNode,
+  MouseEventHandler,
+} from 'react';
 import Dragbble, { DraggableData, DraggableEvent } from 'react-draggable';
 
 import { classNames } from '@/utils';
@@ -18,7 +23,8 @@ interface ChildWrapperProps {
   selected?: boolean;
   uid: any;
   border?: number;
-  handleClick: (data: ChildData) => void;
+  onClick: MouseEventHandler;
+  // handleClick: (data: ChildData) => void;
   handleStateUpdate: (data: ChildData) => void;
 }
 
@@ -90,7 +96,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       ele: e.target,
     };
 
-    this.props.handleClick(data);
+    // this.props.handleClick(data);
 
     e.stopPropagation();
   };
@@ -124,7 +130,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     return (
       <Dragbble bounds="parent" onDrag={this.handleDrag}>
         <div
-          onClick={this.handleClick}
+          onClick={this.props.onClick}
           className={classNames(className, {
             'layout-child': true,
             selected,

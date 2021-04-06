@@ -13,7 +13,11 @@ import { MagicLayoutProps, MagicState, ChildNode } from './interface';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 
-export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
+export default class MagicLayout extends Component<
+  MagicLayoutProps,
+  MagicState,
+  any
+> {
   public $ref: any;
   static defaultProps = {
     onStateChange: (state: MagicState) => state,
@@ -30,6 +34,7 @@ export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
         state: null,
       },
       selects: [],
+      selectMode: 'single',
     };
   }
 
@@ -43,11 +48,13 @@ export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
 
   $children: any[] = [];
 
-  onChildrenClick = (data: ChildData) => {
+  onChildrenClick = (e: React.MouseEvent, key: string) => {
     colorLog('green', `[MagicLayout]`, `OnChildrenClick`);
 
+    e.preventDefault();
+    e.stopPropagation();
+
     const { selects } = this.state;
-    const { key, ele, state: childState } = data;
 
     if (selects.includes(key)) return;
     this.setState({
@@ -73,11 +80,7 @@ export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
 
   unsetLayout = () => {
     this.setState({
-      activeChild: {
-        uid: null,
-        width: 0,
-        height: 0,
-      },
+      selects: [],
     });
   };
 
@@ -146,7 +149,10 @@ export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
             key={uniqueKey}
             uid={uniqueKey}
             selected={selects.includes(uniqueKey)}
-            handleClick={this.onChildrenClick}
+            onClick={(e) => {
+              this.onChildrenClick(e, uniqueKey);
+            }}
+            // handleClick={this.onChildrenClick}
             handleStateUpdate={() => {}}
           >
             {child}
@@ -167,12 +173,6 @@ export default class MagicLayout extends Component<MagicLayoutProps, any, any> {
         className={classNames(['re-magic-layout', `layout-${layout}`])}
         onClick={this.unsetLayout}
       >
-        {/* {wrapChildren(
-          children,
-          activeChild.uid,
-          this.onChildrenClick,
-          this.onChildStateUpdate,
-        )} */}
         {this.renderChildren()}
       </div>
     );

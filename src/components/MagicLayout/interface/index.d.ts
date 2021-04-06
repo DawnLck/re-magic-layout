@@ -8,7 +8,8 @@ export interface ChildNode {
 }
 export interface MagicState {
   activeChild: ChildNode;
-  selects: [string];
+  selects: string[];
+  selectMode: 'single' | 'multitype';
 }
 export interface MagicLayoutProps {
   layout: string;
