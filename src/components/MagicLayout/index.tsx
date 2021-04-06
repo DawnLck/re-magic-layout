@@ -54,11 +54,12 @@ export default class MagicLayout extends Component<
     e.preventDefault();
     e.stopPropagation();
 
-    const { selects } = this.state;
+    const { selects, selectMode } = this.state;
 
     if (selects.includes(key)) return;
+
     this.setState({
-      selects: [...selects, key],
+      selects: selectMode === 'single' ? [key] : [...selects, key],
     });
   };
 
