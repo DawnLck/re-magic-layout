@@ -2,7 +2,7 @@
  * Magic Layout
  */
 
-import React, { Component, createRef, ReactNode } from 'react';
+import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 
 import './index.less';
 
@@ -21,6 +21,7 @@ export default class MagicLayout extends Component<
 > {
   public $ref: any;
   static defaultProps = {
+    autoWrapChildren: false, // 默认需要用户自己包裹元素
     onStateChange: (state: MagicState) => state,
   };
 
@@ -117,54 +118,78 @@ export default class MagicLayout extends Component<
     this.$children = collectChildrenData(childNodes);
   };
 
-  onChildDragging = (index: number, uid: string) => {
+  onChildDragging = (uid: string) => {
     return () => {
-      colorLog('yellow', `[MagicLayout]`, `onDragging`);
+      colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
 
       // GuideLines
       const { childNodes } = this.$ref.current;
-      const target = childNodes[index];
-      const compares = Array.from(childNodes).filter(
+      const nodesArray = Array.from(childNodes);
+      const target = nodesArray.find((child: any) => {
+        return child.dataset.uid === uid;
+      });
+      const compares = nodesArray.filter(
         (node: any) => node.dataset.uid !== uid,
       );
-      const targetData = collectChildData(target);
+      const targetData = collectChildData(target as HTMLElement);
       const comparesData = collectChildrenData(compares);
       this.setState({ target: targetData, compares: comparesData });
     };
   };
 
-  // renderChildren 渲染子元素
-  renderChildren() {
-    const { children } = this.props;
+  // wrapChildren 为子元素包裹一层
+  wrapChildren = (child: any, uid: any) => {
     const { selects } = this.state;
 
+    return (
+      <ChildWrapper
+        key={uid}
+        uid={uid}
+        selected={selects.includes(uid)}
+        onClick={(e) => {
+          this.onChildrenClick(e, uid);
+        }}
+        onDragStart={this.onChildDragStart}
+        onDragging={this.onChildDragging(uid)}
+        // handleClick={this.onChildrenClick}
+        handleStateUpdate={() => {}}
+      >
+        {child}
+      </ChildWrapper>
+    );
+  };
+
+  // renderChildren 渲染子元素
+  renderChildren = () => {
     colorLog('green', `[MagicLayout]`, `renderChildren`);
+    const { children, autoWrapChildren } = this.props;
+    const { selects } = this.state;
 
     if (Array.isArray(children)) {
       return children.map((child: any, index) => {
         const { uid, 'data-uid': dataUID } = child.props;
-        const uniqueKey = `child_${uid || dataUID || index}`;
-        return (
-          <ChildWrapper
-            key={uniqueKey}
-            uid={uniqueKey}
-            selected={selects.includes(uniqueKey)}
-            onClick={(e) => {
+        const uniqueKey = uid || dataUID || `child_${index}`;
+
+        if (!autoWrapChildren) {
+          return cloneElement(child, {
+            uid: uniqueKey,
+            key: uniqueKey,
+            onClick: (e) => {
               this.onChildrenClick(e, uniqueKey);
-            }}
-            onDragStart={this.onChildDragStart}
-            onDragging={this.onChildDragging(index, uniqueKey)}
-            // handleClick={this.onChildrenClick}
-            handleStateUpdate={() => {}}
-          >
-            {child}
-          </ChildWrapper>
-        );
+            },
+            onDragStart: this.onChildDragStart,
+            onDragging: this.onChildDragging(uniqueKey),
+            selected: selects.includes(uniqueKey),
+            handleStateUpdate: () => {},
+          });
+        } else {
+          return this.wrapChildren(child, uniqueKey);
+        }
       });
     } else {
       return children;
     }
-  }
+  };
 
   render() {
     const { layout } = this.props;

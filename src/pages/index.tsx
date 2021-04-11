@@ -61,25 +61,39 @@ class IndexPage extends Component<any, any> {
             <MagicLayout
               ref={this.magicLayoutRef}
               layout={layout}
+              autoWrapChildren={false}
               onStateChange={this.hanldeStateChange}
               onConfigChange={this.handleConfigChange}
             >
-              <div
-                className="ant-card demo-card"
-                data-uid="uid_test_008"
-                style={{ width: 80, height: 60, display: 'inline-block' }}
-              ></div>
-              <div
-                className="ant-card demo-card"
-                data-uid="uid_test_007"
-                style={{ width: 80, height: 60, display: 'inline-block' }}
-              ></div>
+              <ChildWrapper>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_008"
+                  style={{ width: 80, height: 60, display: 'inline-block' }}
+                >
+                  uid_test_008
+                </div>
+              </ChildWrapper>
+              <ChildWrapper>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_007"
+                  style={{ width: 80, height: 60, display: 'inline-block' }}
+                >
+                  uid_test_007
+                </div>
+              </ChildWrapper>
 
-              <div
-                className="ant-card demo-card"
-                data-uid="uid_test_001"
-                style={{ width: 100, height: 120, display: 'inline-block' }}
-              ></div>
+              <ChildWrapper>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_001"
+                  style={{ width: 100, height: 120, display: 'inline-block' }}
+                >
+                  uid_test_001
+                </div>
+              </ChildWrapper>
+
               {/* <MockCard width={80} height={40}></MockCard> */}
               {/* <MockCard uid="uid_test_001" width={300} height={200}></MockCard> */}
               {/* <MockCard width={800} height={200}></MockCard> */}

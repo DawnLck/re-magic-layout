@@ -21,6 +21,7 @@ const Boundary: any = {
 };
 
 export const buildLines = (target: any, compares: any[]): LineType[] => {
+  // console.log(target, compares);
   let linesMap: any = {};
 
   // 循环遍历四个方位，看是不是有对齐的 ♻️
@@ -110,9 +111,10 @@ const GuideLines = (props: any) => {
   const lines = buildLines(target, compares);
   return (
     <div className="guide-lines">
-      {lines.map((line) => {
+      {lines.map((line, index) => {
         return (
           <GuideLine
+            key={index}
             type={line.type}
             start={line.start}
             end={line.end}
