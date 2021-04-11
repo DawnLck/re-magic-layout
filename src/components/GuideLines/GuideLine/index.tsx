@@ -13,35 +13,23 @@ export interface GuideLineProps {
   type?: 'hLine' | 'vLine';
 }
 
-class GuideLine extends Component<GuideLineProps> {
-  static defaultProps = {
-    type: 'hLine',
+const GuideLine = (props: GuideLineProps) => {
+  const { start, end, type } = props;
+  const [startX, startY] = start;
+  const [endX, endY] = end;
+  const style = {
+    width: type === 'hLine' ? Math.abs(startX - endX) : 1,
+    height: type === 'hLine' ? 1 : Math.abs(startY - endY),
+    left: Math.min(startX, endX),
+    top: Math.min(startY, endY),
   };
-  render() {
-    const { start, end, type } = this.props;
-    const [startX, startY] = start;
-    const [endX, endY] = end;
 
-    let style = {
-      width: 1,
-      height: 1,
-      left: Math.min(startX, endX),
-      top: Math.min(startY, endY),
-    };
-
-    if (type === 'hLine') {
-      style.width = Math.abs(startX - endX);
-    } else {
-      style.height = Math.abs(startY - endY);
-    }
-
-    return (
-      <span
-        className={classNames(['guide-line', camelToLine(type)])}
-        style={style}
-      ></span>
-    );
-  }
-}
+  return (
+    <span
+      className={classNames(['guide-line', camelToLine(type)])}
+      style={style}
+    ></span>
+  );
+};
 
 export default GuideLine;
