@@ -10,6 +10,9 @@ export interface MagicState {
   activeChild: ChildNode;
   selects: string[];
   selectMode: 'single' | 'multitype';
+  // guideLines: any[];
+  target: any;
+  compares: any;
 }
 export interface MagicLayoutProps {
   layout: string;

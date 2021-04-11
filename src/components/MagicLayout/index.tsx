@@ -2,16 +2,17 @@
  * Magic Layout
  */
 
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, ReactNode } from 'react';
 
 import './index.less';
 
 import { classNames, colorLog } from '@/utils';
-import { buildConfig } from './handle';
+import { collectChildrenData, collectChildData } from './handle';
 
 import { MagicLayoutProps, MagicState, ChildNode } from './interface';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
+import GuideLines from '../GuideLines';
 
 export default class MagicLayout extends Component<
   MagicLayoutProps,
@@ -27,14 +28,17 @@ export default class MagicLayout extends Component<
     super(props);
     this.$ref = createRef();
     this.state = {
-      // TODOs: 废弃的状态，=》 selects
+      // TODOs: 废弃的状态，activeChild =》 selects
       activeChild: {
         uid: null,
         ele: null,
         state: null,
       },
+      // 新版本在用的状态
       selects: [],
       selectMode: 'single',
+      target: null,
+      compares: [],
     };
   }
 
@@ -93,44 +97,40 @@ export default class MagicLayout extends Component<
     // onStateChange(this.state);
   }
 
-  shouldComponentUpdate(newProps: MagicLayoutProps, newState: MagicState) {
-    const { layout } = this.props;
-    const { selects } = this.state;
-    console.log({ selects, new: newState.selects });
+  // shouldComponentUpdate(newProps: MagicLayoutProps, newState: MagicState) {
+  //   const { layout } = this.props;
+  //   const { selects } = this.state;
+  //   console.log({ selects, new: newState.selects });
 
-    return layout !== newProps.layout || selects !== newState.selects;
-  }
+  //   return layout !== newProps.layout || selects !== newState.selects;
+  // }
 
   componentDidMount() {
     // this.config = buildConfig(this.props);
     this.config.layout = this.props.layout;
   }
 
-  // 拖拽初始时 计算出所有元素的坐标信息，存储于this.$children
-  onDragStart = () => {
-    const { children } = this.props;
-    this.$children = (this.props.children as any[]).map((child, i) => {
-      const $ = this.$ref.childNodes[i];
-      const x = Number($.getAttribute('data-x'));
-      const y = Number($.getAttribute('data-y'));
-      const w = $.clientWidth;
-      const h = $.clientHeight;
+  // onDragStart 拖拽初始时 计算出所有元素的坐标信息，存储于this.$children
+  onChildDragStart = () => {
+    colorLog('yellow', `[MagicLayout]`, `onDragStart`);
+    const { childNodes } = this.$ref.current;
+    this.$children = collectChildrenData(childNodes);
+  };
 
-      return {
-        $,
-        i,
-        x,
-        y,
-        w,
-        h,
-        l: x,
-        r: x + w,
-        t: y,
-        b: y + h,
-        lr: x + w / 2,
-        tb: y + h / 2,
-      };
-    });
+  onChildDragging = (index: number, uid: string) => {
+    return () => {
+      colorLog('yellow', `[MagicLayout]`, `onDragging`);
+
+      // GuideLines
+      const { childNodes } = this.$ref.current;
+      const target = childNodes[index];
+      const compares = Array.from(childNodes).filter(
+        (node: any) => node.dataset.uid !== uid,
+      );
+      const targetData = collectChildData(target);
+      const comparesData = collectChildrenData(compares);
+      this.setState({ target: targetData, compares: comparesData });
+    };
   };
 
   // renderChildren 渲染子元素
@@ -139,7 +139,6 @@ export default class MagicLayout extends Component<
     const { selects } = this.state;
 
     colorLog('green', `[MagicLayout]`, `renderChildren`);
-    console.log(selects);
 
     if (Array.isArray(children)) {
       return children.map((child: any, index) => {
@@ -153,6 +152,8 @@ export default class MagicLayout extends Component<
             onClick={(e) => {
               this.onChildrenClick(e, uniqueKey);
             }}
+            onDragStart={this.onChildDragStart}
+            onDragging={this.onChildDragging(index, uniqueKey)}
             // handleClick={this.onChildrenClick}
             handleStateUpdate={() => {}}
           >
@@ -167,14 +168,20 @@ export default class MagicLayout extends Component<
 
   render() {
     const { layout } = this.props;
+    const { target, compares } = this.state;
 
     return (
-      <div
-        ref={this.$ref}
-        className={classNames(['re-magic-layout', `layout-${layout}`])}
-        onClick={this.unsetLayout}
-      >
-        {this.renderChildren()}
+      <div className={classNames(['re-magic-layout', `layout-${layout}`])}>
+        <div
+          className={'re-magic-layout-children'}
+          ref={this.$ref}
+          onClick={this.unsetLayout}
+        >
+          {this.renderChildren()}
+        </div>
+        <div className={'re-magic-layout-tools'}>
+          <GuideLines target={target} compares={compares}></GuideLines>
+        </div>
       </div>
     );
   }

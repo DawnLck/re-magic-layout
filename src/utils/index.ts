@@ -66,6 +66,9 @@ export const debounce = (fn: (...args: any) => any, delay: number = 1000) => {
 };
 
 // 驼峰转换连线
-export function camelToLine(name: string) {
-  return name.replace(/([A-Z])/g, '-$1').toLowerCase();
+export function camelToLine(name: string | undefined) {
+  return name && name.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
+
+// 无意义函数，用于占位
+export const noop = () => {};

@@ -66,6 +66,11 @@ class IndexPage extends Component<any, any> {
             >
               <div
                 className="ant-card demo-card"
+                data-uid="uid_test_008"
+                style={{ width: 80, height: 60, display: 'inline-block' }}
+              ></div>
+              <div
+                className="ant-card demo-card"
                 data-uid="uid_test_007"
                 style={{ width: 80, height: 60, display: 'inline-block' }}
               ></div>
