@@ -13,7 +13,9 @@
 
 // 样式主体
 .layout-child {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: inline-block;
   vertical-align: top;
   box-sizing: border-box;
@@ -40,97 +42,5 @@
       border: 2px solid @color-child-selected-border;
       z-index: @z-index-selected-border;
     }
-  }
-}
-
-// Resize 和 Scale(double-resize) 部分
-.layout-child-resize {
-  opacity: 0;
-  &.selected {
-    opacity: 1;
-  }
-  .resize-item {
-    position: absolute;
-    display: inline-block;
-    content: '';
-
-    width: 8px;
-    height: 8px;
-    background-color: @color-primary;
-    z-index: @z-index-resize;
-  }
-
-  .top,
-  .bottom,
-  .right,
-  .left {
-    width: 4px;
-    height: 4px;
-  }
-
-  .top {
-    &,
-    &-left,
-    &-right {
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(0%);
-      box-sizing: content-box;
-    }
-    &-left {
-      left: 0;
-      transform: translateX(0%) translateY(0%);
-    }
-    &-right {
-      left: 100%;
-      transform: translateX(-100%) translateY(0%);
-    }
-  }
-  .bottom {
-    &,
-    &-left,
-    &-right {
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(0%);
-    }
-    &-left {
-      left: 0;
-      transform: translateX(0%) translateY(0%);
-    }
-    &-right {
-      left: 100%;
-      transform: translateX(-100%) translateY(0%);
-    }
-  }
-  .right {
-    top: 50%;
-    right: 0;
-    transform: translateX(0%) translateY(-50%);
-  }
-  .left {
-    top: 50%;
-    left: 0;
-    transform: translateX(0%) translateY(-50%);
-  }
-
-  // Cursors
-  .right,
-  .left {
-    cursor: ew-resize;
-    height: 24px;
-  }
-  .top,
-  .bottom {
-    cursor: ns-resize;
-    width: 24px;
-  }
-  .top-left,
-  .bottom-right {
-    cursor: nwse-resize;
-  }
-  .top-right,
-  .bottom-left {
-    cursor: nesw-resize;
   }
 }

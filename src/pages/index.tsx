@@ -6,11 +6,12 @@ import './draggable.less';
 import React, { Component, createRef } from 'react';
 
 import { ToolBar, SideBar } from '../blocks';
-import { MockCard } from '../widgets';
-import { MagicLayout } from '../components';
 import { Row, Col } from 'antd';
+import { MockCard } from '../widgets';
 
-import { mainStore } from '../store';
+// import { mainStore } from '../store';
+
+import { MagicLayout, ChildWrapper } from '../components';
 
 class IndexPage extends Component<any, any> {
   public magicLayoutRef: any;
@@ -28,13 +29,12 @@ class IndexPage extends Component<any, any> {
   config = null;
   componentDidMount() {
     // const { layout: oldLayout } = this.state;
-
-    mainStore.subscribe(() => {
-      const { layout: newLayout } = mainStore.getState();
-      this.setState({
-        layout: newLayout,
-      });
-    });
+    // mainStore.subscribe(() => {
+    //   const { layout: newLayout } = mainStore.getState();
+    //   this.setState({
+    //     layout: newLayout,
+    //   });
+    // });
   }
   hanldeStateChange = (data: any) => {
     console.log('[Pages]: State Change', data);
@@ -61,17 +61,42 @@ class IndexPage extends Component<any, any> {
             <MagicLayout
               ref={this.magicLayoutRef}
               layout={layout}
+              autoWrapChildren={false}
               onStateChange={this.hanldeStateChange}
               onConfigChange={this.handleConfigChange}
             >
-              <div
-                className="ant-card demo-card"
-                data-uid="uid_test_007"
-                style={{ width: 400, height: 300, display: 'inline-block' }}
-              ></div>
-              <MockCard width={300} height={200}></MockCard>
-              <MockCard uid="uid_test_001" width={300} height={200}></MockCard>
-              <MockCard width={800} height={200}></MockCard>
+              <ChildWrapper defaultPosition={{ x: 300, y: 400 }}>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_008"
+                  style={{ width: 80, height: 60, display: 'inline-block' }}
+                >
+                  uid_test_008
+                </div>
+              </ChildWrapper>
+              <ChildWrapper defaultPosition={{ x: 100, y: 400 }}>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_007"
+                  style={{ width: 80, height: 60, display: 'inline-block' }}
+                >
+                  uid_test_007
+                </div>
+              </ChildWrapper>
+
+              <ChildWrapper defaultPosition={{ x: 300, y: 200 }}>
+                <div
+                  className="ant-card demo-card"
+                  data-uid="uid_test_001"
+                  style={{ width: 100, height: 120, display: 'inline-block' }}
+                >
+                  uid_test_001
+                </div>
+              </ChildWrapper>
+
+              {/* <MockCard width={80} height={40}></MockCard> */}
+              {/* <MockCard uid="uid_test_001" width={300} height={200}></MockCard> */}
+              {/* <MockCard width={800} height={200}></MockCard> */}
             </MagicLayout>
           </div>
         </Col>
