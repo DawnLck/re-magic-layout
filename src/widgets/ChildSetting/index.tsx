@@ -84,9 +84,7 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
     this.state = initState;
   }
 
-  componentDidMount() {
-    console.log('didMount');
-  }
+  componentDidMount() {}
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props !== prevProps && this.props.child?.ele) {
       this.setState(this.props.child.state);

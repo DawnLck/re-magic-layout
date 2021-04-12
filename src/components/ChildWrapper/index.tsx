@@ -16,13 +16,12 @@ import './index.less';
 import ResizeAnchors from '../ResizeAnchors';
 
 interface ChildWrapperProps {
-  uid: any;
+  uid?: any;
   className?: string;
-  width?: number;
-  height?: number;
   moveGrid?: [number, number] | null;
   selected?: boolean;
   border?: number;
+  defaultPosition?: { x: number; y: number };
   onClick: MouseEventHandler;
   onDragStart: () => void;
   onDragging: () => void;
@@ -49,18 +48,17 @@ export type ChildData = {
 
 class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   static defaultProps = {
-    width: 300,
-    height: 200,
     moveGrid: [1, 1],
     onClick: noop,
     onDragStart: noop,
     onDragging: noop,
     onDragEnd: noop,
+    handleStateUpdate: noop,
   };
   constructor(props: any) {
     super(props);
 
-    const { children } = this.props;
+    const { children, defaultPosition } = this.props;
 
     const {
       style,
@@ -72,8 +70,8 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     const height = (style && style.height) || propHeight;
 
     this.state = {
-      x: 0,
-      y: 0,
+      x: defaultPosition?.x || 0,
+      y: defaultPosition?.y || 0,
       width,
       height,
       border: 0,
@@ -129,6 +127,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   handleDragEnd = () => {};
 
   componentDidMount() {
+    // 传递子元素实例
     this.props.handleStateUpdate({
       key: this.props.uid,
       state: this.state,
@@ -137,12 +136,13 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   }
 
   render() {
-    const { children, className, selected, uid } = this.props;
+    const { children, className, selected, uid, defaultPosition } = this.props;
     const { width, height, border, zIndex, x, y } = this.state;
     return (
       <Dragbble
         grid={[10, 10]}
         bounds="parent"
+        // defaultPosition={defaultPosition}
         onDrag={this.handleDragging}
         onStart={this.handleDragStart}
         onStop={this.handleDragEnd}
