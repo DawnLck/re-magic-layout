@@ -6,13 +6,16 @@ import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 
 import './index.less';
 
-import { classNames, colorLog } from '@/utils';
-import { collectChildrenData, collectChildData } from './handle';
+import { classNames, colorLog, mathBetween } from '@/utils';
+import { collectChildrenData, collectChildData, getDirection } from './handle';
 
 import { MagicLayoutProps, MagicState, ChildNode } from './interface';
+import { MagicDraggingData } from '../interface';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
+
+const MagneticThreshold = 10.1;
 
 export default class MagicLayout extends Component<
   MagicLayoutProps,
@@ -119,11 +122,27 @@ export default class MagicLayout extends Component<
   };
 
   onChildDragging = (uid: string) => {
-    return () => {
+    return (data: MagicDraggingData) => {
       colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
+      const { x, y, deltaX, deltaY, lastX, lastY, width, height } = data;
+      const direction = getDirection(deltaX, deltaY);
+      let adjustX = lastX,
+        adjustY = lastY;
+
+      // console.log('Direction: ', direction, deltaX, deltaY);
 
       // GuideLines
-      const { childNodes } = this.$ref.current;
+      const {
+        childNodes,
+        scrollHeight: boundBottom,
+        scrollWidth: boundRight,
+      } = this.$ref.current as HTMLElement;
+
+      adjustX = mathBetween(adjustX, 0, boundRight - width);
+      adjustY = mathBetween(adjustY, 0, boundBottom - height);
+
+      // console.log({ adjustX, adjustY });
+
       const nodesArray = Array.from(childNodes);
       const target = nodesArray.find((child: any) => {
         return child.dataset.uid === uid;
@@ -131,9 +150,71 @@ export default class MagicLayout extends Component<
       const compares = nodesArray.filter(
         (node: any) => node.dataset.uid !== uid,
       );
-      const targetData = collectChildData(target as HTMLElement);
-      const comparesData = collectChildrenData(compares);
+
+      // TODO: 这里需要做一些处理，做吸附操作
+      let targetData: { [key: string]: any } = collectChildData(
+        target as HTMLElement,
+      );
+      const comparesData: { [key: string]: any }[] = collectChildrenData(
+        compares,
+      );
+
+      // console.log({
+      //   width,
+      //   height,
+      //   targetW: targetData.width,
+      //   targetH: targetData.height,
+      // });
+
+      // const { x: targetNodeX, y: targetNodeY } = targetData;
+      // console.log({ x, y, targetNodeX, targetNodeY, deltaX, deltaY });
+
+      // if (targetData.x < 0) targetData.x = 0;
+      // else if (targetData)
+      // console.log({ targetData, comparesData });
+      // console.log({
+      //   targetData: targetData[direction],
+      //   comparesData: comparesData.map((item) => item[direction]),
+      // });
+
+      // 处理吸附逻辑开始
+      // const _target = targetData[direction];
+      // const magnetic = {
+      //   distance: MagneticThreshold,
+      //   x: targetData.x + deltaX,
+      //   y: targetData.y + deltaY,
+      // };
+      // comparesData.map((item) => {
+      //   const _compare = item[direction];
+      //   const _distance = Math.abs(_compare - _target);
+      //   if (_distance < magnetic.distance) {
+      //     magnetic.distance = _distance;
+      //     targetData[direction] = _compare;
+      //     switch (direction) {
+      //       case 'left':
+      //         magnetic.x = _compare;
+      //         break;
+      //       case 'right':
+      //         magnetic.x = _compare - _target.width;
+      //         break;
+      //       case 'top':
+      //         magnetic.y = _compare;
+      //       case 'bottom':
+      //         magnetic.y = _compare - _target.height;
+      //     }
+      //   }
+      // });
+
+      // if (magnetic.distance !== MagneticThreshold) {
+      //   debugger;
+      // }
+
+      // targetData.x = magnetic.x;
+      // targetData.y = magnetic.y;
+
       this.setState({ target: targetData, compares: comparesData });
+
+      return { adjustX, adjustY };
     };
   };
 
