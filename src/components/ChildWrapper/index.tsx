@@ -18,7 +18,7 @@ import { classNames, noop } from '@/utils';
 import './index.less';
 
 import ResizeAnchors from '../ResizeAnchors';
-import { MagicDraggingData } from '../interface';
+import { MagicDraggingData } from '../typings';
 
 interface ChildWrapperProps {
   uid?: any;
@@ -28,7 +28,7 @@ interface ChildWrapperProps {
   border?: number;
   defaultPosition?: { x: number; y: number };
   onClick: MouseEventHandler;
-  onDragStart: () => void;
+  onDragStart: () => any;
   onDragging: (data: MagicDraggingData) => any;
   onDragEnd: () => void;
 
@@ -186,7 +186,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
         onDrag={this.handleDragging}
         onStart={this.handleDragStart}
         onStop={this.handleDragEnd}
-        // position={{ x, y }}
+        position={{ x, y }}
         // offsetParent
       >
         <div

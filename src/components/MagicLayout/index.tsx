@@ -10,12 +10,12 @@ import { classNames, colorLog, mathBetween } from '@/utils';
 import { collectChildrenData, collectChildData, getDirection } from './handle';
 
 import { MagicLayoutProps, MagicState, ChildNode } from './interface';
-import { MagicDraggingData } from '../interface';
+import { MagicDraggingData } from '../typings';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
 
-const MagneticThreshold = 10.1;
+const MagneticThreshold = 20.1;
 
 export default class MagicLayout extends Component<
   MagicLayoutProps,
@@ -23,6 +23,11 @@ export default class MagicLayout extends Component<
   any
 > {
   public $ref: any;
+  public $compares: {
+    nodes: any;
+    data: any[];
+  };
+
   static defaultProps = {
     autoWrapChildren: false, // 默认需要用户自己包裹元素
     onStateChange: (state: MagicState) => state,
@@ -44,6 +49,10 @@ export default class MagicLayout extends Component<
       target: null,
       compares: [],
     };
+    this.$compares = {
+      nodes: null,
+      data: [],
+    };
   }
 
   element: HTMLDivElement | null = null;
@@ -53,8 +62,6 @@ export default class MagicLayout extends Component<
     mode: '',
     children: {},
   };
-
-  $children: any[] = [];
 
   onChildrenClick = (e: React.MouseEvent, key: string) => {
     colorLog('green', `[MagicLayout]`, `OnChildrenClick`);
@@ -115,21 +122,41 @@ export default class MagicLayout extends Component<
   }
 
   // onDragStart 拖拽初始时 计算出所有元素的坐标信息，存储于this.$children
-  onChildDragStart = () => {
-    colorLog('yellow', `[MagicLayout]`, `onDragStart`);
-    const { childNodes } = this.$ref.current;
-    this.$children = collectChildrenData(childNodes);
+  onChildDragStart = (uid: string) => {
+    return () => {
+      colorLog('yellow', `[MagicLayout]`, `onDragStart`);
+      const { childNodes } = this.$ref.current;
+
+      // 获取并缓存对比节点的数据
+      const nodesArray = Array.from(childNodes);
+      const _compareNodes = nodesArray.filter(
+        (node: any) => node.dataset.uid !== uid,
+      );
+      this.$compares = {
+        nodes: _compareNodes,
+        data: collectChildrenData(_compareNodes),
+      };
+    };
   };
 
+  // onChildDragging 拖拽时计算辅助参考线和吸附
   onChildDragging = (uid: string) => {
     return (data: MagicDraggingData) => {
       colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
-      const { x, y, deltaX, deltaY, lastX, lastY, width, height } = data;
-      const direction = getDirection(deltaX, deltaY);
+      const {
+        x: targetX,
+        y: targetY,
+        deltaX,
+        deltaY,
+        lastX,
+        lastY,
+        width,
+        height,
+      } = data;
+      const directionData = getDirection(deltaX, deltaY);
+
       let adjustX = lastX,
         adjustY = lastY;
-
-      // console.log('Direction: ', direction, deltaX, deltaY);
 
       // GuideLines
       const {
@@ -138,79 +165,80 @@ export default class MagicLayout extends Component<
         scrollWidth: boundRight,
       } = this.$ref.current as HTMLElement;
 
+      // 把范围限制在画布以内
       adjustX = mathBetween(adjustX, 0, boundRight - width);
       adjustY = mathBetween(adjustY, 0, boundBottom - height);
 
-      // console.log({ adjustX, adjustY });
-
+      // 获取节点的数据
       const nodesArray = Array.from(childNodes);
       const target = nodesArray.find((child: any) => {
         return child.dataset.uid === uid;
       });
-      const compares = nodesArray.filter(
-        (node: any) => node.dataset.uid !== uid,
-      );
 
-      // TODO: 这里需要做一些处理，做吸附操作
       let targetData: { [key: string]: any } = collectChildData(
         target as HTMLElement,
       );
-      const comparesData: { [key: string]: any }[] = collectChildrenData(
-        compares,
-      );
-
-      // console.log({
-      //   width,
-      //   height,
-      //   targetW: targetData.width,
-      //   targetH: targetData.height,
-      // });
+      const comparesData = this.$compares.data;
 
       // const { x: targetNodeX, y: targetNodeY } = targetData;
-      // console.log({ x, y, targetNodeX, targetNodeY, deltaX, deltaY });
-
-      // if (targetData.x < 0) targetData.x = 0;
-      // else if (targetData)
-      // console.log({ targetData, comparesData });
-      // console.log({
-      //   targetData: targetData[direction],
-      //   comparesData: comparesData.map((item) => item[direction]),
-      // });
 
       // 处理吸附逻辑开始
-      // const _target = targetData[direction];
-      // const magnetic = {
-      //   distance: MagneticThreshold,
-      //   x: targetData.x + deltaX,
-      //   y: targetData.y + deltaY,
-      // };
-      // comparesData.map((item) => {
-      //   const _compare = item[direction];
-      //   const _distance = Math.abs(_compare - _target);
-      //   if (_distance < magnetic.distance) {
-      //     magnetic.distance = _distance;
-      //     targetData[direction] = _compare;
-      //     switch (direction) {
-      //       case 'left':
-      //         magnetic.x = _compare;
-      //         break;
-      //       case 'right':
-      //         magnetic.x = _compare - _target.width;
-      //         break;
-      //       case 'top':
-      //         magnetic.y = _compare;
-      //       case 'bottom':
-      //         magnetic.y = _compare - _target.height;
-      //     }
-      //   }
-      // });
+      const {
+        related: relatedBounds,
+        delta: directionDelta,
+        standardDelta,
+        towards,
+      } = directionData;
+      let magneticArray: any = [];
 
-      // if (magnetic.distance !== MagneticThreshold) {
-      //   debugger;
-      // }
+      const _target = targetData[towards];
+      comparesData.forEach((item) => {
+        relatedBounds.forEach((bound) => {
+          const _compare = item[bound];
+          // const _target = targetData[bound];
+          const _distance = standardDelta * (_compare - _target);
+          magneticArray.push({ distance: _distance, bound, value: _compare });
+        });
+      });
 
-      // targetData.x = magnetic.x;
-      // targetData.y = magnetic.y;
+      magneticArray = magneticArray.sort(
+        (a: any, b: any) => a.distance - b.distance,
+      );
+
+      const _adjust = magneticArray[0];
+
+      if (_adjust && _adjust.distance < MagneticThreshold) {
+        // debugger;
+        const { bound, value } = _adjust;
+        switch (towards) {
+          case 'right':
+            targetData.x = value - targetData.width;
+            targetData.right = value;
+            targetData.left = value - targetData.width;
+            adjustX = value - targetData.width;
+            break;
+          case 'left':
+            targetData.x = value;
+            targetData.right = value + targetData.width;
+            targetData.left = value;
+            adjustX = value;
+            break;
+          case 'top':
+            targetData.y = value;
+            targetData.top = value;
+            targetData.bottom = value + targetData.height;
+            adjustY = value;
+            break;
+          case 'bottom':
+            targetData.y = value - targetData.height;
+            targetData.top = value - targetData.height;
+            targetData.bottom = value;
+            adjustY = value - targetData.height;
+            break;
+        }
+      }
+
+      console.log({ magneticArray, adjustX, adjustY });
 
       this.setState({ target: targetData, compares: comparesData });
 
@@ -230,7 +258,7 @@ export default class MagicLayout extends Component<
         onClick={(e) => {
           this.onChildrenClick(e, uid);
         }}
-        onDragStart={this.onChildDragStart}
+        onDragStart={this.onChildDragStart(uid)}
         onDragging={this.onChildDragging(uid)}
         // handleClick={this.onChildrenClick}
         handleStateUpdate={() => {}}
@@ -255,10 +283,10 @@ export default class MagicLayout extends Component<
           return cloneElement(child, {
             uid: uniqueKey,
             key: uniqueKey,
-            onClick: (e) => {
+            onClick: (e: any) => {
               this.onChildrenClick(e, uniqueKey);
             },
-            onDragStart: this.onChildDragStart,
+            onDragStart: this.onChildDragStart(uniqueKey),
             onDragging: this.onChildDragging(uniqueKey),
             selected: selects.includes(uniqueKey),
             handleStateUpdate: () => {},
