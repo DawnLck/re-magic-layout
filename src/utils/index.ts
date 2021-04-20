@@ -77,3 +77,12 @@ export const noop = () => {};
 export const mathBetween = (target: number, min: number, max: number) => {
   return Math.min(max, Math.max(target, min));
 };
+
+export const buildBoundaries = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) => {
+  return { top: y, right: x + width, bottom: y + height, left: x };
+};

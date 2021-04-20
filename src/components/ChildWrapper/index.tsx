@@ -174,14 +174,15 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     const { x, y } = this.$origin;
 
     const result = this.props._dragging({
+      node: e.target,
+      width,
+      height,
       x,
       y,
       deltaX: deltaCursorX,
       deltaY: deltaCursorY,
       lastX: x + deltaCursorX,
       lastY: y + deltaCursorY,
-      width,
-      height,
       ...buildBoundaries(x + deltaCursorX, y + deltaCursorY, width, height),
     });
     const { adjustX, adjustY } = result;

@@ -139,6 +139,16 @@ export default class MagicLayout extends Component<
     };
   };
 
+  // 把范围限制在画布以内
+  limitDragRange = (x: number, y: number, width: number, height: number) => {
+    const { scrollHeight: boundBottom, scrollWidth: boundRight } = this.$ref
+      .current as HTMLElement;
+    return {
+      x: mathBetween(x, 0, boundRight - width),
+      y: mathBetween(y, 0, boundBottom - height),
+    };
+  };
+
   // onChildDragging 拖拽时计算辅助参考线和吸附
   onChildDragging = (uid: string) => {
     return (data: MagicDraggingData) => {
@@ -153,34 +163,17 @@ export default class MagicLayout extends Component<
         width,
         height,
       } = data;
+
       const directionData = getDirection(deltaX, deltaY);
 
-      let adjustX = lastX,
-        adjustY = lastY;
-
-      // GuideLines
-      const {
-        childNodes,
-        scrollHeight: boundBottom,
-        scrollWidth: boundRight,
-      } = this.$ref.current as HTMLElement;
-
-      // 把范围限制在画布以内
-      adjustX = mathBetween(adjustX, 0, boundRight - width);
-      adjustY = mathBetween(adjustY, 0, boundBottom - height);
-
-      // 获取节点的数据
-      const nodesArray = Array.from(childNodes);
-      const target = nodesArray.find((child: any) => {
-        return child.dataset.uid === uid;
-      });
-
-      let targetData: { [key: string]: any } = collectChildData(
-        target as HTMLElement,
+      let { x: adjustX, y: adjustY } = this.limitDragRange(
+        lastX,
+        lastY,
+        width,
+        height,
       );
-      const comparesData = this.$compares.data;
 
-      // const { x: targetNodeX, y: targetNodeY } = targetData;
+      const comparesData = this.$compares.data;
 
       // 处理吸附逻辑开始
       const {
@@ -191,12 +184,11 @@ export default class MagicLayout extends Component<
       } = directionData;
       let magneticArray: any = [];
 
-      const _target = targetData[towards];
+      const _target = data[towards];
       comparesData.forEach((item) => {
         relatedBounds.forEach((bound) => {
           const _compare = item[bound];
-          // const _target = targetData[bound];
-          const _distance = standardDelta * (_compare - _target);
+          const _distance = Math.abs(_compare - _target);
           magneticArray.push({ distance: _distance, bound, value: _compare });
         });
       });
@@ -212,35 +204,35 @@ export default class MagicLayout extends Component<
         const { bound, value } = _adjust;
         switch (towards) {
           case 'right':
-            targetData.x = value - targetData.width;
-            targetData.right = value;
-            targetData.left = value - targetData.width;
-            adjustX = value - targetData.width;
+            data.x = value - data.width;
+            data.right = value;
+            data.left = value - data.width;
+            adjustX = value - data.width;
             break;
           case 'left':
-            targetData.x = value;
-            targetData.right = value + targetData.width;
-            targetData.left = value;
+            data.x = value;
+            data.right = value + data.width;
+            data.left = value;
             adjustX = value;
             break;
           case 'top':
-            targetData.y = value;
-            targetData.top = value;
-            targetData.bottom = value + targetData.height;
+            data.y = value;
+            data.top = value;
+            data.bottom = value + data.height;
             adjustY = value;
             break;
           case 'bottom':
-            targetData.y = value - targetData.height;
-            targetData.top = value - targetData.height;
-            targetData.bottom = value;
-            adjustY = value - targetData.height;
+            data.y = value - data.height;
+            data.top = value - data.height;
+            data.bottom = value;
+            adjustY = value - data.height;
             break;
         }
       }
 
       console.log({ magneticArray, adjustX, adjustY });
 
-      this.setState({ target: targetData, compares: comparesData });
+      this.setState({ target: data, compares: comparesData });
 
       return { adjustX, adjustY };
     };
