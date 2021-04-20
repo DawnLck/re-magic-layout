@@ -13,7 +13,7 @@ import Dragbble, {
   DraggableEvent,
 } from 'react-draggable';
 
-import { classNames, noop } from '@/utils';
+import { classNames, noop, buildBoundaries } from '@/utils';
 
 import './index.less';
 
@@ -29,7 +29,7 @@ interface ChildWrapperProps {
   defaultPosition?: { x: number; y: number };
   // 来源于开发者的响应函数
   onClick: MouseEventHandler;
-  onDragStart: () => any;
+  onDragStart: (e: DraggableEvent, data: DraggableData) => any;
   onDragging: (data: MagicDraggingData) => any;
   onDragEnd: () => void;
   // 来源于MagicLayout的响应函数
@@ -57,12 +57,23 @@ export type ChildData = {
 };
 
 class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
+  private $cursor: {
+    startX: number;
+    startY: number;
+  };
+  private $origin: {
+    x: number;
+    y: number;
+  };
   static defaultProps = {
     grid: 1,
     onClick: noop,
     onDragStart: noop,
     onDragging: noop,
     onDragEnd: noop,
+    _click: noop,
+    _dragStart: noop,
+    _dragging: noop,
     handleStateUpdate: noop,
   };
   constructor(props: any) {
@@ -87,6 +98,9 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       border: 0,
       zIndex: 1,
     };
+
+    this.$cursor = { startX: 0, startY: 0 };
+    this.$origin = { x: 0, y: 0 };
   }
 
   updateState = (state: ChildWrapperState) => {
@@ -125,30 +139,50 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
    */
 
   handleDragStart = (e: DraggableEvent, data: DraggableData) => {
-    const { x: cursorX, y: cursorY } = data;
-    const result = this.props._dragStart();
+    const {
+      x: cursorX,
+      y: cursorY,
+      lastX: lastCursorX,
+      lastY: lastCursorY,
+    } = data;
+    this.$cursor = {
+      startX: lastCursorX,
+      startY: lastCursorY,
+    };
+    this.$origin = {
+      x: this.state.x,
+      y: this.state.y,
+    };
+    this.props.onDragStart(e, data);
+    this.props._dragStart();
   };
 
   handleDragging = (e: DraggableEvent, data: DraggableData) => {
     console.log('Hanlde Drag', { dragEvent: e, dragData: data });
     const {
-      x: cursorX,
-      y: cursorY,
+      // x: cursorX,
+      // y: cursorY,
       lastX: cursorLastX,
       lastY: cursorLastY,
-      deltaX,
-      deltaY,
+      // deltaX,
+      // deltaY,
     } = data;
-    const { x, y, width, height } = this.state;
+    const { width, height } = this.state;
+    const { startX: cursorStartX, startY: cursorStartY } = this.$cursor;
+    const deltaCursorX = cursorLastX - cursorStartX;
+    const deltaCursorY = cursorLastY - cursorStartY;
+    const { x, y } = this.$origin;
+
     const result = this.props._dragging({
       x,
       y,
-      deltaX,
-      deltaY,
-      lastX: x + deltaX,
-      lastY: y + deltaY,
+      deltaX: deltaCursorX,
+      deltaY: deltaCursorY,
+      lastX: x + deltaCursorX,
+      lastY: y + deltaCursorY,
       width,
       height,
+      ...buildBoundaries(x + deltaCursorX, y + deltaCursorY, width, height),
     });
     const { adjustX, adjustY } = result;
     // console.log(result);
