@@ -27,10 +27,15 @@ interface ChildWrapperProps {
   selected?: boolean;
   border?: number;
   defaultPosition?: { x: number; y: number };
+  // 来源于开发者的响应函数
   onClick: MouseEventHandler;
   onDragStart: () => any;
   onDragging: (data: MagicDraggingData) => any;
   onDragEnd: () => void;
+  // 来源于MagicLayout的响应函数
+  _click: MouseEventHandler;
+  _dragStart: () => any;
+  _dragging: (data: MagicDraggingData) => any;
 
   // handleClick: (data: ChildData) => void;
   handleStateUpdate: (data: ChildData) => void;
@@ -110,7 +115,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     };
 
     // this.props.handleClick(data);
-    this.props.onClick(e);
+    this.props._click(e);
 
     // this.setState({ x: x + 10, y: y + 10 });
   };
@@ -118,6 +123,12 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   /**
    * 处理子元素的Drag事件
    */
+
+  handleDragStart = (e: DraggableEvent, data: DraggableData) => {
+    const { x: cursorX, y: cursorY } = data;
+    const result = this.props._dragStart();
+  };
+
   handleDragging = (e: DraggableEvent, data: DraggableData) => {
     console.log('Hanlde Drag', { dragEvent: e, dragData: data });
     const {
@@ -129,7 +140,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       deltaY,
     } = data;
     const { x, y, width, height } = this.state;
-    const result = this.props.onDragging({
+    const result = this.props._dragging({
       x,
       y,
       deltaX,
@@ -146,10 +157,6 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     // this.setState({ x: x + deltaX, y: y + deltaY });
 
     // Drag 会触发一次Click事件，形成事件的上传，不过有个地方需要完善，用户如果拖出范围，click事件就会丢失，导致位置没有及时刷新
-  };
-
-  handleDragStart = (e: DraggableEvent, data: DraggableData) => {
-    const result = this.props.onDragStart();
   };
 
   handleDragEnd = () => {};

@@ -255,11 +255,11 @@ export default class MagicLayout extends Component<
         key={uid}
         uid={uid}
         selected={selects.includes(uid)}
-        onClick={(e) => {
+        _click={(e) => {
           this.onChildrenClick(e, uid);
         }}
-        onDragStart={this.onChildDragStart(uid)}
-        onDragging={this.onChildDragging(uid)}
+        _dragStart={this.onChildDragStart(uid)}
+        _dragging={this.onChildDragging(uid)}
         // handleClick={this.onChildrenClick}
         handleStateUpdate={() => {}}
       >
@@ -283,11 +283,11 @@ export default class MagicLayout extends Component<
           return cloneElement(child, {
             uid: uniqueKey,
             key: uniqueKey,
-            onClick: (e: any) => {
+            _click: (e: any) => {
               this.onChildrenClick(e, uniqueKey);
             },
-            onDragStart: this.onChildDragStart(uniqueKey),
-            onDragging: this.onChildDragging(uniqueKey),
+            _dragStart: this.onChildDragStart(uniqueKey),
+            _dragging: this.onChildDragging(uniqueKey),
             selected: selects.includes(uniqueKey),
             handleStateUpdate: () => {},
           });
