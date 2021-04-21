@@ -158,7 +158,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   };
 
   handleDragging = (e: DraggableEvent, data: DraggableData) => {
-    console.log('Hanlde Drag', { dragEvent: e, dragData: data });
+    // console.log('Hanlde Drag', { dragEvent: e, dragData: data });
     const {
       // x: cursorX,
       // y: cursorY,
@@ -242,6 +242,9 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
           data-y={y}
           style={style}
         >
+          <div className="dev-tips">
+            <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span>
+          </div>
           {cloneElement(children as any, {
             props: {
               width: width,

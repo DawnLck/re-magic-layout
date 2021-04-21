@@ -79,9 +79,7 @@ class IndexPage extends Component<any, any> {
                   className="ant-card demo-card"
                   data-uid="uid_test_007"
                   style={{ width: 80, height: 60, display: 'inline-block' }}
-                >
-                  uid_test_007
-                </div>
+                ></div>
               </ChildWrapper>
 
               <ChildWrapper defaultPosition={{ x: 350, y: 200 }}>
@@ -89,9 +87,7 @@ class IndexPage extends Component<any, any> {
                   className="ant-card demo-card"
                   data-uid="uid_test_001"
                   style={{ width: 100, height: 120, display: 'inline-block' }}
-                >
-                  uid_test_001
-                </div>
+                ></div>
               </ChildWrapper>
 
               {/* <MockCard width={80} height={40}></MockCard> */}
