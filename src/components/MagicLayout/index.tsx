@@ -6,13 +6,8 @@ import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 
 import './index.less';
 
-import { classNames, colorLog, mathBetween } from '@/utils';
-import {
-  collectChildrenData,
-  collectChildData,
-  getDirection,
-  calcMagnetic,
-} from './handle';
+import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
+import { collectChildrenData, calcMagnetic } from './handle';
 
 import { MagicLayoutProps, MagicState, ChildNode } from './interface';
 import { MagicDraggingData } from '../typings';
@@ -149,8 +144,9 @@ export default class MagicLayout extends Component<
     const { scrollHeight: boundBottom, scrollWidth: boundRight } = this.$ref
       .current as HTMLElement;
     return {
-      x: mathBetween(x, 0, boundRight - width),
-      y: mathBetween(y, 0, boundBottom - height),
+      lastX: mathBetween(x, 0, boundRight - width),
+      lastY: mathBetween(y, 0, boundBottom - height),
+      ...buildBoundaries(x, y, width, height),
     };
   };
 
@@ -159,42 +155,34 @@ export default class MagicLayout extends Component<
     return (data: MagicDraggingData) => {
       // colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
       const {
-        x: targetX,
-        y: targetY,
-        deltaX,
-        deltaY,
+        // x: targetX,
+        // y: targetY,
+        // deltaX,
+        // deltaY,
         lastX,
         lastY,
         width,
         height,
       } = data;
 
-      const directionData = getDirection(deltaX, deltaY);
+      // 处理吸附逻辑
+      const result = calcMagnetic({ ...data }, this.$compares.data);
 
-      let { x: adjustX, y: adjustY } = this.limitDragRange(
-        lastX,
-        lastY,
+      // 限制移动范围至画布边界
+      const boundRange = this.limitDragRange(
+        result ? result.lastX : lastX,
+        result ? result.lastY : lastY,
         width,
         height,
       );
 
-      const comparesData = this.$compares.data;
-
-      // 处理吸附逻辑
-      const result = calcMagnetic(directionData, data, this.$compares.data);
-
-      // 刷新辅助线
+      // 基于吸附后的状态刷新辅助线
       this.setState({ target: result });
 
-      if (result) {
-        // console.log({ target: data, compares: this.$compares.data });
-        return {
-          adjustX: result.x,
-          adjustY: result.y,
-        };
-      }
-
-      return { adjustX, adjustY };
+      return {
+        adjustX: boundRange.lastX,
+        adjustY: boundRange.lastY,
+      };
     };
   };
 

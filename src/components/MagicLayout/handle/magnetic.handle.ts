@@ -3,6 +3,9 @@
  * 磁吸的一些无状态逻辑
  */
 
+import { buildBoundaries } from '@/utils';
+import { MagicDraggingData } from '../../typings';
+
 const MagneticThreshold = 10.1;
 
 export type DirectionData = {
@@ -21,8 +24,6 @@ export type MagneticData = {
   compareDirection: Direction;
   value: number;
 };
-import { buildBoundaries } from '@/utils';
-import { MagicDraggingData } from '../../typings';
 
 const AsixMap = {
   horizontal: {
@@ -89,7 +90,6 @@ const calcAxisMagnetic = (
 };
 
 export const calcMagnetic = (
-  directionData: DirectionData,
   target: MagicDraggingData,
   compares: MagicDraggingData[],
 ) => {
@@ -103,34 +103,33 @@ export const calcMagnetic = (
     (a: any, b: any) => a.distance - b.distance,
   );
   const _adjust = magneticArray[0];
+  const { lastX, lastY, width, height } = target;
 
-  const { width, height } = target;
+  let adjustX = lastX,
+    adjustY = lastY;
 
   // 获取调整后的值
   if (_adjust && _adjust.distance < MagneticThreshold) {
-    // debugger;
-    target.x = target.lastX;
-    target.y = target.lastY;
     const { targetDirection, value } = _adjust;
     switch (targetDirection) {
       case 'right':
-        target.x = value - width;
+        adjustX = value - width;
         break;
       case 'left':
-        target.x = value;
+        adjustX = value;
         break;
       case 'top':
-        target.y = value;
+        adjustY = value;
         break;
       case 'bottom':
-        target.y = value - height;
+        adjustY = value - height;
         break;
     }
     return {
       ...target,
-      x: target.x,
-      y: target.y,
-      ...buildBoundaries(target.x, target.y, target.width, target.height),
+      lastX: adjustX,
+      lastY: adjustY,
+      ...buildBoundaries(adjustX, adjustY, target.width, target.height),
     };
   }
 
