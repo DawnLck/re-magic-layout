@@ -64,7 +64,7 @@ const calcAxisMagnetic = (
   axis: 'horizontal' | 'vertical',
   target: MagicDraggingData,
   compares: MagicDraggingData[],
-): any[] => {
+): MagneticData[] => {
   let collects: MagneticData[] = [];
   const directions = AsixMap[axis].directions;
 
@@ -89,49 +89,53 @@ const calcAxisMagnetic = (
   return collects;
 };
 
+const findNearstMag = (
+  type: 'horizontal' | 'vertical',
+  target: MagicDraggingData,
+  compares: MagicDraggingData[],
+) => {
+  const magArray = calcAxisMagnetic(type, target, compares);
+  let tem = magArray[0] || {};
+  magArray.forEach((item) => {
+    if (item.distance < tem.distance) tem = item;
+  });
+  return tem;
+};
+
 export const calcMagnetic = (
   target: MagicDraggingData,
   compares: MagicDraggingData[],
 ) => {
-  let magneticArray: any = [
-    ...calcAxisMagnetic('horizontal', target, compares),
-    ...calcAxisMagnetic('vertical', target, compares),
-  ];
+  let horizontalNearst = findNearstMag('horizontal', target, compares);
+  let verticalNearst = findNearstMag('vertical', target, compares);
 
-  // 排序，获取距离最短的边界
-  magneticArray = magneticArray.sort(
-    (a: any, b: any) => a.distance - b.distance,
-  );
-  const _adjust = magneticArray[0];
+  console.log({ horizontalNearst, verticalNearst });
+
+  // // 排序，获取距离最短的边界
+  // magneticArray = magneticArray.sort(
+  //   (a: any, b: any) => a.distance - b.distance,
+  // );
+  // const _adjust = magneticArray[0];
   const { lastX, lastY, width, height } = target;
-
   let adjustX = lastX,
     adjustY = lastY;
 
-  // 获取调整后的值
-  if (_adjust && _adjust.distance < MagneticThreshold) {
-    const { targetDirection, value } = _adjust;
-    switch (targetDirection) {
-      case 'right':
-        adjustX = value - width;
-        break;
-      case 'left':
-        adjustX = value;
-        break;
-      case 'top':
-        adjustY = value;
-        break;
-      case 'bottom':
-        adjustY = value - height;
-        break;
-    }
-    return {
-      ...target,
-      lastX: adjustX,
-      lastY: adjustY,
-      ...buildBoundaries(adjustX, adjustY, target.width, target.height),
-    };
+  if (horizontalNearst.distance < MagneticThreshold) {
+    adjustX =
+      horizontalNearst.value +
+      (horizontalNearst.targetDirection === 'right' ? -width : 0);
   }
 
-  return null;
+  if (verticalNearst.distance < MagneticThreshold) {
+    adjustY =
+      verticalNearst.value +
+      (verticalNearst.targetDirection === 'bottom' ? -height : 0);
+  }
+
+  return {
+    ...target,
+    lastX: adjustX,
+    lastY: adjustY,
+    ...buildBoundaries(adjustX, adjustY, target.width, target.height),
+  };
 };
