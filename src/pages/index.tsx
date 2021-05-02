@@ -65,15 +65,13 @@ class IndexPage extends Component<any, any> {
               onStateChange={this.hanldeStateChange}
               onConfigChange={this.handleConfigChange}
             >
-              {/* <ChildWrapper defaultPosition={{ x: 300, y: 100 }}>
+              <ChildWrapper defaultPosition={{ x: 300, y: 100 }}>
                 <div
                   className="ant-card demo-card"
                   data-uid="uid_test_008"
                   style={{ width: 80, height: 60, display: 'inline-block' }}
-                >
-                  uid_test_008
-                </div>
-              </ChildWrapper> */}
+                ></div>
+              </ChildWrapper>
               <ChildWrapper defaultPosition={{ x: 200, y: 400 }}>
                 <div
                   className="ant-card demo-card"

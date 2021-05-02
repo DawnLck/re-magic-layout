@@ -2,9 +2,8 @@
  * Magic Layout
  */
 
-import React, { cloneElement, Component, createRef, ReactNode } from 'react';
-
 import './index.less';
+import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 
 import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
 import { collectChildrenData, calcMagnetic } from './handle';
@@ -14,8 +13,6 @@ import { MagicDraggingData } from '../typings';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
-
-const MagneticThreshold = 10.1;
 
 export default class MagicLayout extends Component<
   MagicLayoutProps,
