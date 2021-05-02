@@ -19,54 +19,55 @@ interface ResizeAnchorsProps {
   onChange: (width: number, height: number) => void;
 }
 
-const Anchors = [
-  'top',
-  'right',
-  'bottom',
-  'left',
-  'topLeft',
-  'topRight',
-  'bottomRight',
-  'bottomLeft',
-];
+type AnchorsTypes =
+  | 'top'
+  | 'bottom'
+  | 'right'
+  | 'left'
+  | 'topRight'
+  | 'bottomRight'
+  | 'topLeft'
+  | 'bottomLeft';
+
+const Anchors: { [key: string]: [number, number] } = {
+  top: [0, 1],
+  bottom: [0, 1],
+  right: [1, 0],
+  left: [1, 0],
+  topRight: [1, 1],
+  bottomRight: [1, 1],
+  topLeft: [1, 1],
+  bottomLeft: [1, 1],
+};
 
 class ResizeAnchors extends Component<ResizeAnchorsProps> {
   static defaultProps = {
     show: true,
   };
 
-  handleAnchorDrag = (e: DraggableEvent, data: DraggableData, type: string) => {
+  handleAnchorDrag = (
+    e: DraggableEvent,
+    data: DraggableData,
+    type: AnchorsTypes,
+  ) => {
     // e.stopPropagation();
     (e as MouseEvent).stopImmediatePropagation();
     e.preventDefault();
 
     const { width, height } = this.props;
     const { deltaX, deltaY } = data;
-    let _width = width,
-      _height = height;
+    const _width = width + Anchors[type][0] * deltaX;
+    const _height = height + Anchors[type][1] * deltaY;
 
-    if (['top', 'bottom'].includes(type)) _height += deltaY;
-    else if (['right', 'left'].includes(type)) _width += deltaX;
-    else if (
-      ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'].includes(type)
-    ) {
-      _width += deltaX;
-      _height += deltaY;
-    } else {
-      console.warn(
-        `Type ${type} is not belong default types like [top, ...., bottomRight]`,
-      );
-    }
-
+    // 把拖拽的改动传回上层，让ChildWrapper自己调整自己的宽高，这里只负责计算
     this.props.onChange(_width, _height);
   };
 
   render() {
-    const { show, onChange } = this.props;
     const hidden = !this.props.show;
     return (
       <div className={classNames({ 'layout-child-resize': true, hidden })}>
-        {Anchors.map((item) => {
+        {Object.keys(Anchors).map((item: any) => {
           return (
             <DraggableCore
               onDrag={(e, v) => {
