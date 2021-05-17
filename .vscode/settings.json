@@ -1,48 +1,63 @@
 {
-  "vscodeGitCommit.customAlias": [
-    {
-      "name": "✨ feat",
-      "description": "新功能 / 新组件"
-    },
-    {
-      "name": "🐛 fix",
-      "description": "修复Bug"
-    },
-    {
-      "name": "📝 docs",
-      "description": "文档、说明和注释"
-    },
-    {
-      "name": "💄 style",
-      "description": "样式 / 格式（不影响代码运行的变动）"
-    },
-    {
-      "name": "🔨 refactor",
-      "description": "重构（即不是新增功能，也不是修改bug的代码变动）"
-    },
-    {
-      "name": "🚀 perf",
-      "description": "性能优化"
-    },
-    {
-      "name": "✅ test",
-      "description": "测试"
-    },
-    {
-      "name": "👷 chore",
-      "description": "构建过程或辅助工具的变动"
-    },
-    {
-      "name": "🚧 wip",
-      "description": "工作正在进行中"
-    },
-    {
-      "name": "⏪ revert",
-      "description": "回退"
-    },
-    {
-      "name": "📄 ci",
-      "description": "CICD 的配置以及script文件更改"
-    }
-  ]
+  "vscodeGitCommit.variables": {
+    "prefix": [
+      {
+        "label": "✨ feat",
+        "key": "feat",
+        "detail": "新功能 / 新组件"
+      },
+      {
+        "label": "🐛 fix",
+        "key": "759919",
+        "detail": "修复Bug"
+      },
+      {
+        "label": "📝 docs",
+        "key": "8153923",
+        "detail": "文档、说明和注释"
+      },
+      {
+        "label": "💄 style",
+        "key": "7712463",
+        "detail": "样式 / 格式（不影响代码运行的变动）"
+      },
+      {
+        "label": "🔨 refactor",
+        "key": "8572622",
+        "detail": "重构（即不是新增功能，也不是修改bug的代码变动）"
+      },
+      {
+        "label": "🚀 perf",
+        "key": "7774877",
+        "detail": "性能优化"
+      },
+      {
+        "label": "✅ test",
+        "key": "975366",
+        "detail": "测试"
+      },
+      {
+        "label": "👷 chore",
+        "key": "4579307",
+        "detail": "构建过程或辅助工具的变动"
+      },
+      {
+        "label": "🚧 wip",
+        "key": "33914",
+        "detail": "工作正在进行中"
+      },
+      {
+        "label": "⏪ revert",
+        "key": "4078469",
+        "detail": "回退"
+      },
+      {
+        "label": "📄 ci",
+        "key": "6857441",
+        "detail": "CICD 的配置以及script文件更改"
+      }
+    ]
+  },
+  "vscodeGitCommit.template": ["{prefix}(): {message}"],
+  "vscodeGitCommit.insertMode": "Replace"
 }

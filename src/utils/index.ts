@@ -72,3 +72,17 @@ export function camelToLine(name: string | undefined) {
 
 // 无意义函数，用于占位
 export const noop = () => {};
+
+// Math.between, 取两值范围内的值
+export const mathBetween = (target: number, min: number, max: number) => {
+  return Math.min(max, Math.max(target, min));
+};
+
+export const buildBoundaries = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) => {
+  return { top: y, right: x + width, bottom: y + height, left: x };
+};

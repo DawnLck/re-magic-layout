@@ -2,44 +2,57 @@
  * Magic Layout
  */
 
+import './index.less';
 import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 
-import './index.less';
+import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
+import { collectChildrenData, calcMagnetic } from './handle';
 
-import { classNames, colorLog } from '@/utils';
-import { collectChildrenData, collectChildData } from './handle';
-
-import { MagicLayoutProps, MagicState, ChildNode } from './interface';
+import { MagicDraggingData } from '../typings';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
 
+export interface MagicLayoutState {
+  selects: string[];
+  selectMode: 'single' | 'multitype';
+  target: any;
+  compares: any;
+}
+export interface MagicLayoutProps {
+  layout: string;
+  autoWrapChildren: boolean; // 是否由MagicLayout完成子元素的包裹
+  onStateChange: (state: MagicLayoutState) => void;
+}
+
 export default class MagicLayout extends Component<
   MagicLayoutProps,
-  MagicState,
+  MagicLayoutState,
   any
 > {
   public $ref: any;
+  public $compares: {
+    nodes: any;
+    data: any[];
+  };
+
   static defaultProps = {
     autoWrapChildren: false, // 默认需要用户自己包裹元素
-    onStateChange: (state: MagicState) => state,
+    onStateChange: (state: MagicLayoutState) => state,
   };
 
   constructor(props: MagicLayoutProps) {
     super(props);
     this.$ref = createRef();
     this.state = {
-      // TODOs: 废弃的状态，activeChild =》 selects
-      activeChild: {
-        uid: null,
-        ele: null,
-        state: null,
-      },
-      // 新版本在用的状态
       selects: [],
       selectMode: 'single',
       target: null,
       compares: [],
+    };
+    this.$compares = {
+      nodes: null,
+      data: [],
     };
   }
 
@@ -51,10 +64,8 @@ export default class MagicLayout extends Component<
     children: {},
   };
 
-  $children: any[] = [];
-
   onChildrenClick = (e: React.MouseEvent, key: string) => {
-    colorLog('green', `[MagicLayout]`, `OnChildrenClick`);
+    // colorLog('green', `[MagicLayout]`, `OnChildrenClick`);
 
     e.preventDefault();
     e.stopPropagation();
@@ -68,10 +79,6 @@ export default class MagicLayout extends Component<
     });
   };
 
-  configUpdate = () => {
-    this.props.onConfigChange(this.config);
-  };
-
   onChildStateUpdate = (data: ChildData) => {
     const { key, ele, state } = data;
     const { children } = this.config;
@@ -81,7 +88,7 @@ export default class MagicLayout extends Component<
       console.error('该子元素缺少key或者uid', ele);
       return;
     }
-    console.log('[MagicLayout]: Child State Update', this.config);
+    // console.log('[MagicLayout]: Child State Update', this.config);
   };
 
   unsetLayout = () => {
@@ -91,12 +98,11 @@ export default class MagicLayout extends Component<
   };
 
   /** LifeCycle Hooks */
-  componentDidUpdate() {
-    colorLog('red', `[MagicLayout]`, `Did Update`);
-    // this.config = buildConfig(this.props);
-    // const { onStateChange } = this.props;
-    // onStateChange(this.state);
-  }
+  // componentDidUpdate() {
+  //   colorLog('red', `[MagicLayout]`, `Did Update`);
+  //   const { onStateChange } = this.props;
+  //   onStateChange(this.state);
+  // }
 
   // shouldComponentUpdate(newProps: MagicLayoutProps, newState: MagicState) {
   //   const { layout } = this.props;
@@ -112,28 +118,67 @@ export default class MagicLayout extends Component<
   }
 
   // onDragStart 拖拽初始时 计算出所有元素的坐标信息，存储于this.$children
-  onChildDragStart = () => {
-    colorLog('yellow', `[MagicLayout]`, `onDragStart`);
-    const { childNodes } = this.$ref.current;
-    this.$children = collectChildrenData(childNodes);
-  };
-
-  onChildDragging = (uid: string) => {
+  onChildDragStart = (uid: string) => {
     return () => {
-      colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
-
-      // GuideLines
+      // colorLog('yellow', `[MagicLayout]`, `onDragStart`);
       const { childNodes } = this.$ref.current;
+
+      // 获取并缓存对比节点的数据
       const nodesArray = Array.from(childNodes);
-      const target = nodesArray.find((child: any) => {
-        return child.dataset.uid === uid;
-      });
-      const compares = nodesArray.filter(
+      const _compareNodes = nodesArray.filter(
         (node: any) => node.dataset.uid !== uid,
       );
-      const targetData = collectChildData(target as HTMLElement);
-      const comparesData = collectChildrenData(compares);
-      this.setState({ target: targetData, compares: comparesData });
+      this.$compares = {
+        nodes: _compareNodes,
+        data: collectChildrenData(_compareNodes),
+      };
+    };
+  };
+
+  // 把范围限制在画布以内
+  limitDragRange = (x: number, y: number, width: number, height: number) => {
+    const { scrollHeight: boundBottom, scrollWidth: boundRight } = this.$ref
+      .current as HTMLElement;
+    return {
+      lastX: mathBetween(x, 0, boundRight - width),
+      lastY: mathBetween(y, 0, boundBottom - height),
+      ...buildBoundaries(x, y, width, height),
+    };
+  };
+
+  // onChildDragging 拖拽时计算辅助参考线和吸附
+  onChildDragging = (uid: string) => {
+    return (data: MagicDraggingData) => {
+      // colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
+      const {
+        // x: targetX,
+        // y: targetY,
+        // deltaX,
+        // deltaY,
+        lastX,
+        lastY,
+        width,
+        height,
+      } = data;
+
+      // 处理吸附逻辑
+      const result = calcMagnetic({ ...data }, this.$compares.data);
+
+      // 限制移动范围至画布边界
+      const boundRange = this.limitDragRange(
+        result ? result.lastX : lastX,
+        result ? result.lastY : lastY,
+        width,
+        height,
+      );
+
+      // 基于吸附后的状态刷新辅助线
+      this.setState({ target: result });
+
+      return {
+        adjustX: boundRange.lastX,
+        adjustY: boundRange.lastY,
+      };
     };
   };
 
@@ -146,11 +191,11 @@ export default class MagicLayout extends Component<
         key={uid}
         uid={uid}
         selected={selects.includes(uid)}
-        onClick={(e) => {
+        _click={(e) => {
           this.onChildrenClick(e, uid);
         }}
-        onDragStart={this.onChildDragStart}
-        onDragging={this.onChildDragging(uid)}
+        _dragStart={this.onChildDragStart(uid)}
+        _dragging={this.onChildDragging(uid)}
         // handleClick={this.onChildrenClick}
         handleStateUpdate={() => {}}
       >
@@ -161,7 +206,7 @@ export default class MagicLayout extends Component<
 
   // renderChildren 渲染子元素
   renderChildren = () => {
-    colorLog('green', `[MagicLayout]`, `renderChildren`);
+    // colorLog('green', `[MagicLayout]`, `renderChildren`);
     const { children, autoWrapChildren } = this.props;
     const { selects } = this.state;
 
@@ -174,11 +219,11 @@ export default class MagicLayout extends Component<
           return cloneElement(child, {
             uid: uniqueKey,
             key: uniqueKey,
-            onClick: (e) => {
+            _click: (e: any) => {
               this.onChildrenClick(e, uniqueKey);
             },
-            onDragStart: this.onChildDragStart,
-            onDragging: this.onChildDragging(uniqueKey),
+            _dragStart: this.onChildDragStart(uniqueKey),
+            _dragging: this.onChildDragging(uniqueKey),
             selected: selects.includes(uniqueKey),
             handleStateUpdate: () => {},
           });
@@ -193,7 +238,7 @@ export default class MagicLayout extends Component<
 
   render() {
     const { layout } = this.props;
-    const { target, compares } = this.state;
+    const { target } = this.state;
 
     return (
       <div className={classNames(['re-magic-layout', `layout-${layout}`])}>
@@ -205,7 +250,10 @@ export default class MagicLayout extends Component<
           {this.renderChildren()}
         </div>
         <div className={'re-magic-layout-tools'}>
-          <GuideLines target={target} compares={compares}></GuideLines>
+          <GuideLines
+            target={target}
+            compares={this.$compares.data}
+          ></GuideLines>
         </div>
       </div>
     );

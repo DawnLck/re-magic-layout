@@ -36,13 +36,7 @@ class IndexPage extends Component<any, any> {
     //   });
     // });
   }
-  hanldeStateChange = (data: any) => {
-    console.log('[Pages]: State Change', data);
-    const { activeChild } = data;
-    const { layout } = this.state;
 
-    this.setState({ layout, activeChild });
-  };
   handleConfigChange = (config: any) => {
     this.setState({ config });
   };
@@ -51,7 +45,7 @@ class IndexPage extends Component<any, any> {
     return (
       <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
         <Col flex="300px" className="settings">
-          <SideBar state={this.state} config={this.magicLayoutRef}></SideBar>
+          <SideBar config={this.state.config}></SideBar>
         </Col>
         <Col flex="auto" className="main">
           <ToolBar></ToolBar>
@@ -62,36 +56,29 @@ class IndexPage extends Component<any, any> {
               ref={this.magicLayoutRef}
               layout={layout}
               autoWrapChildren={false}
-              onStateChange={this.hanldeStateChange}
-              onConfigChange={this.handleConfigChange}
+              onStateChange={this.handleConfigChange}
             >
-              <ChildWrapper defaultPosition={{ x: 300, y: 400 }}>
+              <ChildWrapper defaultPosition={{ x: 300, y: 100 }}>
                 <div
                   className="ant-card demo-card"
                   data-uid="uid_test_008"
                   style={{ width: 80, height: 60, display: 'inline-block' }}
-                >
-                  uid_test_008
-                </div>
+                ></div>
               </ChildWrapper>
-              <ChildWrapper defaultPosition={{ x: 100, y: 400 }}>
+              <ChildWrapper defaultPosition={{ x: 200, y: 400 }}>
                 <div
                   className="ant-card demo-card"
                   data-uid="uid_test_007"
                   style={{ width: 80, height: 60, display: 'inline-block' }}
-                >
-                  uid_test_007
-                </div>
+                ></div>
               </ChildWrapper>
 
-              <ChildWrapper defaultPosition={{ x: 300, y: 200 }}>
+              <ChildWrapper defaultPosition={{ x: 350, y: 200 }}>
                 <div
                   className="ant-card demo-card"
                   data-uid="uid_test_001"
                   style={{ width: 100, height: 120, display: 'inline-block' }}
-                >
-                  uid_test_001
-                </div>
+                ></div>
               </ChildWrapper>
 
               {/* <MockCard width={80} height={40}></MockCard> */}
