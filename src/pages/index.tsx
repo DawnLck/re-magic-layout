@@ -36,13 +36,7 @@ class IndexPage extends Component<any, any> {
     //   });
     // });
   }
-  hanldeStateChange = (data: any) => {
-    console.log('[Pages]: State Change', data);
-    const { activeChild } = data;
-    const { layout } = this.state;
 
-    this.setState({ layout, activeChild });
-  };
   handleConfigChange = (config: any) => {
     this.setState({ config });
   };
@@ -51,7 +45,7 @@ class IndexPage extends Component<any, any> {
     return (
       <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="page">
         <Col flex="300px" className="settings">
-          <SideBar state={this.state} config={this.magicLayoutRef}></SideBar>
+          <SideBar config={this.state.config}></SideBar>
         </Col>
         <Col flex="auto" className="main">
           <ToolBar></ToolBar>
@@ -62,8 +56,7 @@ class IndexPage extends Component<any, any> {
               ref={this.magicLayoutRef}
               layout={layout}
               autoWrapChildren={false}
-              onStateChange={this.hanldeStateChange}
-              onConfigChange={this.handleConfigChange}
+              onStateChange={this.handleConfigChange}
             >
               <ChildWrapper defaultPosition={{ x: 300, y: 100 }}>
                 <div

@@ -8,15 +8,26 @@ import React, { cloneElement, Component, createRef, ReactNode } from 'react';
 import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
 import { collectChildrenData, calcMagnetic } from './handle';
 
-import { MagicLayoutProps, MagicState, ChildNode } from './interface';
 import { MagicDraggingData } from '../typings';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
 
+export interface MagicLayoutState {
+  selects: string[];
+  selectMode: 'single' | 'multitype';
+  target: any;
+  compares: any;
+}
+export interface MagicLayoutProps {
+  layout: string;
+  autoWrapChildren: boolean; // 是否由MagicLayout完成子元素的包裹
+  onStateChange: (state: MagicLayoutState) => void;
+}
+
 export default class MagicLayout extends Component<
   MagicLayoutProps,
-  MagicState,
+  MagicLayoutState,
   any
 > {
   public $ref: any;
@@ -27,20 +38,13 @@ export default class MagicLayout extends Component<
 
   static defaultProps = {
     autoWrapChildren: false, // 默认需要用户自己包裹元素
-    onStateChange: (state: MagicState) => state,
+    onStateChange: (state: MagicLayoutState) => state,
   };
 
   constructor(props: MagicLayoutProps) {
     super(props);
     this.$ref = createRef();
     this.state = {
-      // TODOs: 废弃的状态，activeChild =》 selects
-      activeChild: {
-        uid: null,
-        ele: null,
-        state: null,
-      },
-      // 新版本在用的状态
       selects: [],
       selectMode: 'single',
       target: null,
@@ -75,10 +79,6 @@ export default class MagicLayout extends Component<
     });
   };
 
-  configUpdate = () => {
-    this.props.onConfigChange(this.config);
-  };
-
   onChildStateUpdate = (data: ChildData) => {
     const { key, ele, state } = data;
     const { children } = this.config;
@@ -98,12 +98,11 @@ export default class MagicLayout extends Component<
   };
 
   /** LifeCycle Hooks */
-  componentDidUpdate() {
-    // colorLog('red', `[MagicLayout]`, `Did Update`);
-    // this.config = buildConfig(this.props);
-    // const { onStateChange } = this.props;
-    // onStateChange(this.state);
-  }
+  // componentDidUpdate() {
+  //   colorLog('red', `[MagicLayout]`, `Did Update`);
+  //   const { onStateChange } = this.props;
+  //   onStateChange(this.state);
+  // }
 
   // shouldComponentUpdate(newProps: MagicLayoutProps, newState: MagicState) {
   //   const { layout } = this.props;
@@ -239,7 +238,7 @@ export default class MagicLayout extends Component<
 
   render() {
     const { layout } = this.props;
-    const { target, compares } = this.state;
+    const { target } = this.state;
 
     return (
       <div className={classNames(['re-magic-layout', `layout-${layout}`])}>

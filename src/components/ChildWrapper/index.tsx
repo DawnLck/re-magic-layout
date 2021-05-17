@@ -130,8 +130,6 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
 
     // this.props.handleClick(data);
     this.props._click(e);
-
-    // this.setState({ x: x + 10, y: y + 10 });
   };
 
   /**
