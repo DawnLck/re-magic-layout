@@ -1,6 +1,21 @@
 /**
  *  涉及跨组件如 ChildWrapper 和 MagicLayout 交互的数据类型
  */
+
+// 布局中子元素的布局数据类型
+export type LayoutItem = {
+  uid: string;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  zIndex?: number; //层级
+  minWidth?: number;
+  minHeight?: number;
+  static?: boolean; // 是否固定
+};
+
+// 拖拽时的交互数据类型
 export type MagicDraggingData = {
   node: EventTarget | null; // Target HTMLElement
   x: number; // Origin x
@@ -16,3 +31,5 @@ export type MagicDraggingData = {
   top: number;
   bottom: number;
 };
+
+export type LayoutType = 'free' | 'flex' | 'float';

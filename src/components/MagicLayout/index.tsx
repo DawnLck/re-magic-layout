@@ -3,12 +3,12 @@
  */
 
 import './index.less';
-import React, { cloneElement, Component, createRef, ReactNode } from 'react';
+import React, { cloneElement, createRef, PureComponent } from 'react';
 
 import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
 import { collectChildrenData, calcMagnetic } from './handle';
 
-import { MagicDraggingData } from '../typings';
+import { MagicDraggingData, LayoutItem, LayoutType } from '../typings';
 
 import ChildWrapper, { ChildData } from '../ChildWrapper';
 import GuideLines from '../GuideLines';
@@ -20,12 +20,14 @@ export interface MagicLayoutState {
   compares: any;
 }
 export interface MagicLayoutProps {
-  layout: string;
+  layout: LayoutItem[];
+  layoutType: LayoutType; //切换布局类型 fixed / free / flex
   autoWrapChildren: boolean; // 是否由MagicLayout完成子元素的包裹
   onStateChange: (state: MagicLayoutState) => void;
+  onLayoutChange: (layout: LayoutItem[]) => void;
 }
 
-export default class MagicLayout extends Component<
+export default class MagicLayout extends PureComponent<
   MagicLayoutProps,
   MagicLayoutState,
   any
@@ -37,6 +39,8 @@ export default class MagicLayout extends Component<
   };
 
   static defaultProps = {
+    layout: [],
+    layoutType: 'free',
     autoWrapChildren: false, // 默认需要用户自己包裹元素
     onStateChange: (state: MagicLayoutState) => state,
   };
@@ -114,7 +118,7 @@ export default class MagicLayout extends Component<
 
   componentDidMount() {
     // this.config = buildConfig(this.props);
-    this.config.layout = this.props.layout;
+    // this.config.layout = this.props.layout;
   }
 
   // onDragStart 拖拽初始时 计算出所有元素的坐标信息，存储于this.$children
@@ -175,6 +179,15 @@ export default class MagicLayout extends Component<
       // 基于吸附后的状态刷新辅助线
       this.setState({ target: result });
 
+      let layout = this.props.layout;
+      let index = layout.findIndex((item) => item.uid === uid);
+      layout[index].x = boundRange.lastX;
+      layout[index].y = boundRange.lastY;
+
+      // console.log({ index, uid, layout, boundRange });
+
+      this.props.onLayoutChange(layout);
+
       return {
         adjustX: boundRange.lastX,
         adjustY: boundRange.lastY,
@@ -206,19 +219,26 @@ export default class MagicLayout extends Component<
 
   // renderChildren 渲染子元素
   renderChildren = () => {
-    // colorLog('green', `[MagicLayout]`, `renderChildren`);
     const { children, autoWrapChildren } = this.props;
     const { selects } = this.state;
+    const { layout } = this.props;
 
     if (Array.isArray(children)) {
       return children.map((child: any, index) => {
+        if (autoWrapChildren) {
+        }
         const { uid, 'data-uid': dataUID } = child.props;
         const uniqueKey = uid || dataUID || `child_${index}`;
+        const childLayout = layout.find(
+          (item: LayoutItem) => item.uid === uniqueKey,
+        );
 
+        // 这里需要判断是不是需要包裹子元素
         if (!autoWrapChildren) {
           return cloneElement(child, {
             uid: uniqueKey,
             key: uniqueKey,
+            layout: childLayout,
             _click: (e: any) => {
               this.onChildrenClick(e, uniqueKey);
             },
@@ -237,11 +257,11 @@ export default class MagicLayout extends Component<
   };
 
   render() {
-    const { layout } = this.props;
+    // const { layout } = this.props;
     const { target } = this.state;
 
     return (
-      <div className={classNames(['re-magic-layout', `layout-${layout}`])}>
+      <div className={classNames(['re-magic-layout'])}>
         <div
           className={'re-magic-layout-children'}
           ref={this.$ref}

@@ -18,7 +18,7 @@ import { classNames, noop, buildBoundaries } from '@/utils';
 import './index.less';
 
 import ResizeAnchors from '../ResizeAnchors';
-import { MagicDraggingData } from '../typings';
+import { MagicDraggingData, LayoutItem } from '../typings';
 
 interface ChildWrapperProps {
   uid?: any;
@@ -27,6 +27,8 @@ interface ChildWrapperProps {
   selected?: boolean;
   border?: number;
   defaultPosition?: { x: number; y: number };
+  layout?: LayoutItem;
+
   // 来源于开发者的响应函数
   onClick: MouseEventHandler;
   onDragStart: (e: DraggableEvent, data: DraggableData) => any;
@@ -67,6 +69,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   };
   static defaultProps = {
     grid: 1,
+    layout: {},
     onClick: noop,
     onDragStart: noop,
     onDragging: noop,
@@ -79,7 +82,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   constructor(props: any) {
     super(props);
 
-    const { children, defaultPosition } = this.props;
+    const { children, layout, defaultPosition } = this.props;
 
     const {
       style,
@@ -87,12 +90,12 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       height: propHeight,
     } = (children as any).props;
 
-    const width = (style && style.width) || propWidth;
-    const height = (style && style.height) || propHeight;
+    const width = layout?.width || (style && style.width) || propWidth;
+    const height = layout?.height || (style && style.height) || propHeight;
 
     this.state = {
-      x: defaultPosition?.x || 0,
-      y: defaultPosition?.y || 0,
+      x: layout?.x || defaultPosition?.x || 0,
+      y: layout?.y || defaultPosition?.y || 0,
       width,
       height,
       border: 0,
@@ -118,7 +121,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
 
   handleClick = (e: any) => {
     e.stopPropagation();
-    console.log('[ChildWrapper] HandleClick: ', e);
+    // console.log('[ChildWrapper] HandleClick: ', e);
 
     // const { key } = this.props;
     const { width, height, x, y } = this.state;
@@ -184,10 +187,8 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       ...buildBoundaries(x + deltaCursorX, y + deltaCursorY, width, height),
     });
     const { adjustX, adjustY } = result;
-    // console.log(result);
+
     this.setState({ x: adjustX, y: adjustY });
-    // console.log({ lastX, lastY }, data);
-    // this.setState({ x: x + deltaX, y: y + deltaY });
 
     // Drag 会触发一次Click事件，形成事件的上传，不过有个地方需要完善，用户如果拖出范围，click事件就会丢失，导致位置没有及时刷新
   };
@@ -204,19 +205,23 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   }
 
   render() {
-    const { children, className, selected, uid, grid } = this.props;
+    const { children, className, selected, uid, grid, layout } = this.props;
     const { width, height, border, zIndex, x, y } = this.state;
+
+    // console.log({ x: layout?.x, y: layout?.y });
 
     const gridProp: any = grid
       ? { grid: [Math.max(grid, 1), Math.max(grid, 1)] }
       : { grid: null };
 
+    const childPosition = { x: layout?.x || x, y: layout?.y || y };
+
     const style = {
-      transform: `translate(${x}px, ${y}px)`,
-      width,
-      height,
+      transform: `translate(${childPosition.x}px, ${childPosition.y}px)`,
+      width: layout?.width || width,
+      height: layout?.height || height,
+      zIndex: layout?.zIndex || zIndex,
       borderWidth: border,
-      zIndex,
     };
 
     return (
@@ -226,7 +231,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
         onDrag={this.handleDragging}
         onStart={this.handleDragStart}
         onStop={this.handleDragEnd}
-        position={{ x, y }}
+
         // offsetParent
       >
         <div
@@ -241,7 +246,8 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
           style={style}
         >
           <div className="dev-tips">
-            <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span>
+            {/* <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span> */}
+            index: <span>{zIndex}</span>
           </div>
           {cloneElement(children as any, {
             props: {

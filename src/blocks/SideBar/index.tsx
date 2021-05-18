@@ -5,11 +5,13 @@ import React, { Component } from 'react';
 import './index.less';
 import { Divider, Tabs } from 'antd';
 import { BasicTab, ConfigTab } from './tabs';
+import { MagicLayoutState } from '../../components/MagicLayout';
 
 const { TabPane } = Tabs;
+
 interface SideBarProps {
-  state: any;
-  config: any;
+  layout: any[];
+  config: MagicLayoutState;
 }
 class SideBar extends Component<SideBarProps> {
   state = {
@@ -21,16 +23,16 @@ class SideBar extends Component<SideBarProps> {
     // console.log(this.props.config);
     if (key === '2') {
       const { config } = this.props;
-      if (config?.current?.config) {
-        this.setState({ config: config.current.config });
-      }
+      // if (config?.current?.config) {
+      //   // this.setState({ config: config.current.config });
+      // }
       // this.setState({ config: window.localStorage.getItem('currConfig') });
     }
   };
 
   render() {
     const { config } = this.state;
-    const { state } = this.props;
+    const { layout } = this.props;
     return (
       <div className="settings-panel">
         <Tabs
@@ -41,10 +43,10 @@ class SideBar extends Component<SideBarProps> {
           centered
         >
           <TabPane tab="基础" key="1">
-            <BasicTab state={state}></BasicTab>
+            {/* <BasicTab state={state}></BasicTab> */}
           </TabPane>
           <TabPane tab="状态" key="2">
-            <ConfigTab data={config}></ConfigTab>
+            <ConfigTab data={layout}></ConfigTab>
           </TabPane>
         </Tabs>
       </div>

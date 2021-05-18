@@ -109,7 +109,7 @@ export const calcMagnetic = (
   let horizontalNearst = findNearstMag('horizontal', target, compares);
   let verticalNearst = findNearstMag('vertical', target, compares);
 
-  console.log({ horizontalNearst, verticalNearst });
+  // console.log({ horizontalNearst, verticalNearst });
 
   // // 排序，获取距离最短的边界
   // magneticArray = magneticArray.sort(

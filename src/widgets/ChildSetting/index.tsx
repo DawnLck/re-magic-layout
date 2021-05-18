@@ -69,7 +69,6 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
     const { child } = props;
     const { ele, state, uid } = child;
 
-    console.log('constructor');
     let initState = {
       width: 0,
       height: 0,
