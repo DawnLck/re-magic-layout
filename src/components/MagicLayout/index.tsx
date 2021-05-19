@@ -69,18 +69,13 @@ export default class MagicLayout extends PureComponent<
   };
 
   onChildrenClick = (e: React.MouseEvent, key: string) => {
-    // colorLog('green', `[MagicLayout]`, `OnChildrenClick`);
-
     e.preventDefault();
     e.stopPropagation();
 
-    const { selects, selectMode } = this.state;
-
-    if (selects.includes(key)) return;
-
-    this.setState({
-      selects: selectMode === 'single' ? [key] : [...selects, key],
-    });
+    const layout = this.props.layout.slice(0);
+    const targetIndex = layout.findIndex((item) => item.uid === key);
+    layout[targetIndex].selected = !layout[targetIndex].selected;
+    this.props.onLayoutChange(layout);
   };
 
   onChildStateUpdate = (data: ChildData) => {
@@ -96,9 +91,11 @@ export default class MagicLayout extends PureComponent<
   };
 
   unsetLayout = () => {
-    this.setState({
-      selects: [],
+    const layout = this.props.layout.slice(0);
+    layout.forEach((item) => {
+      item.selected = false;
     });
+    this.props.onLayoutChange(layout);
   };
 
   /** LifeCycle Hooks */
@@ -184,8 +181,6 @@ export default class MagicLayout extends PureComponent<
       layout[index].x = boundRange.lastX;
       layout[index].y = boundRange.lastY;
 
-      // console.log({ index, uid, layout, boundRange });
-
       this.props.onLayoutChange(layout);
 
       return {
@@ -244,7 +239,7 @@ export default class MagicLayout extends PureComponent<
             },
             _dragStart: this.onChildDragStart(uniqueKey),
             _dragging: this.onChildDragging(uniqueKey),
-            selected: selects.includes(uniqueKey),
+            selected: childLayout?.selected,
             handleStateUpdate: () => {},
           });
         } else {

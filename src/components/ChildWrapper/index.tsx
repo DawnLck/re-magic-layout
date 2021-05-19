@@ -30,7 +30,7 @@ interface ChildWrapperProps {
   layout?: LayoutItem;
 
   // 来源于开发者的响应函数
-  onClick: MouseEventHandler;
+  onClick: (data: any) => void;
   onDragStart: (e: DraggableEvent, data: DraggableData) => any;
   onDragging: (data: MagicDraggingData) => any;
   onDragEnd: () => void;
@@ -121,17 +121,13 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
 
   handleClick = (e: any) => {
     e.stopPropagation();
-    // console.log('[ChildWrapper] HandleClick: ', e);
-
-    // const { key } = this.props;
-    const { width, height, x, y } = this.state;
     const data = {
       key: this.props.uid,
       state: this.state,
       ele: e.target,
     };
 
-    // this.props.handleClick(data);
+    this.props.onClick(data);
     this.props._click(e);
   };
 
@@ -247,7 +243,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
         >
           <div className="dev-tips">
             {/* <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span> */}
-            index: <span>{zIndex}</span>
+            index: <span>{style.zIndex}</span>
           </div>
           {cloneElement(children as any, {
             props: {
@@ -262,7 +258,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
           <ResizeAnchors
             width={width}
             height={height}
-            show={selected}
+            show={!!selected}
             onChange={(width, height) => {
               this.setState({ width, height });
             }}

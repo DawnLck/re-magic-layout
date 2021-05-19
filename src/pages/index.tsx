@@ -68,8 +68,20 @@ class IndexPage extends Component<any, any> {
     this.setState({ config });
   };
 
-  handleToolbar = (event: any) => {
-    message.info(event);
+  handleToolbar = (event: any, value: any) => {
+    const layout = this.state.layout;
+
+    switch (event) {
+      case 'zIndex':
+        layout.forEach((item: LayoutItem) => {
+          if (item.selected) item.zIndex = item.zIndex + value;
+        });
+        break;
+      default:
+        break;
+    }
+
+    this.setState({ layout });
   };
 
   handleLayoutChange = (layout: LayoutItem[]) => {

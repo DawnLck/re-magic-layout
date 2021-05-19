@@ -13,6 +13,7 @@ export type LayoutItem = {
   minWidth?: number;
   minHeight?: number;
   static?: boolean; // 是否固定
+  selected?: boolean; // 是否被选择
 };
 
 // 拖拽时的交互数据类型
