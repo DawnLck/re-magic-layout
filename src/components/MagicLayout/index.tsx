@@ -154,20 +154,15 @@ export default class MagicLayout extends PureComponent<
   // onChildDragging 拖拽时计算辅助参考线和吸附
   onChildDragging = (uid: string) => {
     return (data: MagicDraggingData) => {
-      // colorLog('yellow', `[MagicLayout]`, `onDragging ${uid}`);
-      const {
-        // x: targetX,
-        // y: targetY,
-        // deltaX,
-        // deltaY,
-        lastX,
-        lastY,
-        width,
-        height,
-      } = data;
+      const childLayout = this.props.layout.find((item) => item.uid === uid);
+      const { width, height } = childLayout as LayoutItem;
+      const { lastX, lastY } = data;
 
       // 处理吸附逻辑
-      const result = calcMagnetic({ ...data }, this.$compares.data);
+      const result = calcMagnetic(
+        { ...data, width, height },
+        this.$compares.data,
+      );
 
       // 限制移动范围至画布边界
       const boundRange = this.limitDragRange(
@@ -192,6 +187,14 @@ export default class MagicLayout extends PureComponent<
         adjustY: boundRange.lastY,
       };
     };
+  };
+
+  onChildResize = (uid: string, childLayout: LayoutItem) => {
+    const layout = this.props.layout;
+    layout.forEach((item) => {
+      if (item.uid === uid) item = childLayout;
+    });
+    this.props.onLayoutChange(layout);
   };
 
   // wrapChildren 为子元素包裹一层
@@ -244,6 +247,7 @@ export default class MagicLayout extends PureComponent<
             _dragStart: this.onChildDragStart(uniqueKey),
             _dragging: this.onChildDragging(uniqueKey),
             _dragEnd: this.onChildDragEnd,
+            _resize: this.onChildResize,
             selected: childLayout?.selected,
             handleStateUpdate: () => {},
           });

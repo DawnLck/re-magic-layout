@@ -13,7 +13,7 @@ import Dragbble, {
   DraggableEvent,
 } from 'react-draggable';
 
-import { classNames, noop, buildBoundaries } from '@/utils';
+import { classNames, noop, buildBoundaries, clearEvent } from '@/utils';
 
 import './index.less';
 
@@ -39,6 +39,7 @@ interface ChildWrapperProps {
   _dragStart: () => any;
   _dragging: (data: MagicDraggingData) => any;
   _dragEnd: () => any;
+  _resize: (uid: string, layout: LayoutItem) => void;
 
   // handleClick: (data: ChildData) => void;
   handleStateUpdate: (data: ChildData) => void;
@@ -79,6 +80,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     _dragStart: noop,
     _dragging: noop,
     _dragEnd: noop,
+    _resize: noop,
     handleStateUpdate: noop,
   };
   constructor(props: any) {
@@ -122,7 +124,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
   };
 
   handleClick = (e: any) => {
-    e.stopPropagation();
+    clearEvent(e);
     const data = {
       key: this.props.uid,
       state: this.state,
@@ -149,15 +151,14 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
       startY: lastCursorY,
     };
     this.$origin = {
-      x: this.state.x,
-      y: this.state.y,
+      x: this.props.layout?.x || this.state.x,
+      y: this.props.layout?.y || this.state.y,
     };
     this.props.onDragStart(e, data);
     this.props._dragStart();
   };
 
   handleDragging = (e: DraggableEvent, data: DraggableData) => {
-    // console.log('Hanlde Drag', { dragEvent: e, dragData: data });
     const {
       // x: cursorX,
       // y: cursorY,
@@ -204,11 +205,21 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     });
   }
 
+  resizeChild = (data: any) => {
+    const layout = this.props.layout;
+    if (!layout) return;
+    const { width, height, deltaX, deltaY } = data;
+    layout.width = width;
+    layout.height = height;
+    layout.x = layout.x + deltaX;
+    layout.y = layout.y + deltaY;
+
+    this.props._resize(this.props.uid, layout);
+  };
+
   render() {
     const { children, className, selected, uid, grid, layout } = this.props;
     const { width, height, border, zIndex, x, y } = this.state;
-
-    // console.log({ x: layout?.x, y: layout?.y });
 
     const gridProp: any = grid
       ? { grid: [Math.max(grid, 1), Math.max(grid, 1)] }
@@ -260,12 +271,10 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
             },
           })}
           <ResizeAnchors
-            width={width}
-            height={height}
+            width={style.width}
+            height={style.height}
             show={!!selected}
-            onChange={(width, height) => {
-              this.setState({ width, height });
-            }}
+            onChange={this.resizeChild}
           ></ResizeAnchors>
         </div>
       </DraggableCore>

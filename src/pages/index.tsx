@@ -85,7 +85,6 @@ class IndexPage extends Component<any, any> {
   };
 
   handleLayoutChange = (layout: LayoutItem[]) => {
-    console.log(layout[0].x, layout[0].y);
     this.setState({ layout: [...layout] });
   };
 

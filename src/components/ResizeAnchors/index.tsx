@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 
-import { classNames, camelToLine } from '@/utils';
+import { classNames, camelToLine, clearEvent } from '@/utils';
 
 import { DraggableCore, DraggableEvent, DraggableData } from 'react-draggable';
 
@@ -16,7 +16,12 @@ interface ResizeAnchorsProps {
   show?: boolean;
   width: number;
   height: number;
-  onChange: (width: number, height: number) => void;
+  onChange: (data: {
+    width: number;
+    height: number;
+    deltaX: number;
+    deltaY: number;
+  }) => void;
 }
 
 type AnchorsTypes =
@@ -29,15 +34,43 @@ type AnchorsTypes =
   | 'topLeft'
   | 'bottomLeft';
 
-const Anchors: { [key: string]: [number, number] } = {
-  top: [0, 1],
-  bottom: [0, 1],
-  right: [1, 0],
-  left: [1, 0],
-  topRight: [1, 1],
-  bottomRight: [1, 1],
-  topLeft: [1, 1],
-  bottomLeft: [1, 1],
+type AnchorsStruct = {
+  [key: string]: {
+    relative?: [number, number];
+    matrix: [number, number];
+  };
+};
+
+const Anchors: AnchorsStruct = {
+  top: {
+    relative: [0, 1],
+    matrix: [0, -1],
+  },
+  bottom: {
+    matrix: [0, 1],
+  },
+  right: {
+    matrix: [1, 0],
+  },
+  left: {
+    relative: [1, 0],
+    matrix: [-1, 0],
+  },
+  topRight: {
+    relative: [0, 1],
+    matrix: [1, -1],
+  },
+  bottomRight: {
+    matrix: [1, 1],
+  },
+  topLeft: {
+    matrix: [-1, -1],
+    relative: [1, 1],
+  },
+  bottomLeft: {
+    relative: [1, 0],
+    matrix: [-1, 1],
+  },
 };
 
 class ResizeAnchors extends Component<ResizeAnchorsProps> {
@@ -45,23 +78,41 @@ class ResizeAnchors extends Component<ResizeAnchorsProps> {
     show: true,
   };
 
-  handleAnchorDrag = (
-    e: DraggableEvent,
-    data: DraggableData,
-    type: AnchorsTypes,
-  ) => {
+  private $cursorX: number = 0;
+  private $cursorY: number = 0;
+
+  handleAnchorDrag = (e: any, data: DraggableData, type: AnchorsTypes) => {
     // e.stopPropagation();
     (e as MouseEvent).stopImmediatePropagation();
     e.preventDefault();
 
     const { width, height } = this.props;
-    const { deltaX, deltaY } = data;
-    const _width = width + Anchors[type][0] * deltaX;
-    const _height = height + Anchors[type][1] * deltaY;
+
+    const { deltaX, deltaY, lastX, lastY } = data;
+    const { matrix, relative } = Anchors[type];
+
+    const cursorDeltaX = e.clientX - this.$cursorX;
+    const cursorDeltaY = e.clientY - this.$cursorY;
+
+    const _width = width + matrix[0] * cursorDeltaX;
+    const _height = height + matrix[1] * cursorDeltaY;
 
     // 把拖拽的改动传回上层，让ChildWrapper自己调整自己的宽高，这里只负责计算
-    this.props.onChange(_width, _height);
+    this.props.onChange({
+      width: _width,
+      height: _height,
+      deltaX: relative && relative[0] ? e.clientX - this.$cursorX : 0,
+      deltaY: relative && relative[1] ? e.clientY - this.$cursorY : 0,
+    });
+    this.$cursorX = e.clientX;
+    this.$cursorY = e.clientY;
   };
+
+  handleDragStart = (e: any, data: DraggableData) => {
+    this.$cursorX = e.clientX || e.pageX;
+    this.$cursorY = e.clientY || e.pageY;
+  };
+  handleDragStop = () => {};
 
   render() {
     const hidden = !this.props.show;
@@ -70,9 +121,11 @@ class ResizeAnchors extends Component<ResizeAnchorsProps> {
         {Object.keys(Anchors).map((item: any) => {
           return (
             <DraggableCore
+              onStart={this.handleDragStart}
               onDrag={(e, v) => {
                 this.handleAnchorDrag(e, v, item);
               }}
+              onStop={this.handleDragStop}
               key={item}
             >
               <div className={classNames(['resize-item', camelToLine(item)])}>

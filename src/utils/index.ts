@@ -86,3 +86,7 @@ export const buildBoundaries = (
 ) => {
   return { top: y, right: x + width, bottom: y + height, left: x };
 };
+export const clearEvent = (e: Event | MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
