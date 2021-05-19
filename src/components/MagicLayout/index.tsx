@@ -136,6 +136,10 @@ export default class MagicLayout extends PureComponent<
     };
   };
 
+  onChildDragEnd = () => {
+    this.setState({ target: null });
+  };
+
   // 把范围限制在画布以内
   limitDragRange = (x: number, y: number, width: number, height: number) => {
     const { scrollHeight: boundBottom, scrollWidth: boundRight } = this.$ref
@@ -239,6 +243,7 @@ export default class MagicLayout extends PureComponent<
             },
             _dragStart: this.onChildDragStart(uniqueKey),
             _dragging: this.onChildDragging(uniqueKey),
+            _dragEnd: this.onChildDragEnd,
             selected: childLayout?.selected,
             handleStateUpdate: () => {},
           });

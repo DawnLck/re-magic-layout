@@ -107,7 +107,7 @@ const adjustLine = (origin: any, item: any) => {
  */
 const GuideLines = (props: any) => {
   const { target, compares } = props;
-  if (!target || !compares) return <></>;
+  if (!target || !compares?.length) return <></>;
   const lines = buildLines(target, compares);
   return (
     <div className="guide-lines">

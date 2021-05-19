@@ -38,6 +38,7 @@ interface ChildWrapperProps {
   _click: MouseEventHandler;
   _dragStart: () => any;
   _dragging: (data: MagicDraggingData) => any;
+  _dragEnd: () => any;
 
   // handleClick: (data: ChildData) => void;
   handleStateUpdate: (data: ChildData) => void;
@@ -77,6 +78,7 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     _click: noop,
     _dragStart: noop,
     _dragging: noop,
+    _dragEnd: noop,
     handleStateUpdate: noop,
   };
   constructor(props: any) {
@@ -189,7 +191,9 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     // Drag 会触发一次Click事件，形成事件的上传，不过有个地方需要完善，用户如果拖出范围，click事件就会丢失，导致位置没有及时刷新
   };
 
-  handleDragEnd = () => {};
+  handleDragEnd = () => {
+    this.props._dragEnd();
+  };
 
   componentDidMount() {
     // 传递子元素实例
