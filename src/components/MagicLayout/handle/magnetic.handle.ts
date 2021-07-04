@@ -8,15 +8,16 @@ import { MagicDraggingData } from '../../typings';
 
 const MagneticThreshold = 10.1;
 
+type Direction = 'left' | 'right' | 'top' | 'bottom';
+type Axis = 'horizontal' | 'vertical';
+
 export type DirectionData = {
-  direction: 'horizontal' | 'vertical';
+  direction: Axis;
   related: [string, string];
-  towards: 'right' | 'left' | 'top' | 'bottom';
+  towards: Direction;
   delta: number;
   standardDelta: number;
 };
-
-type Direction = 'left' | 'right' | 'top' | 'bottom';
 
 export type MagneticData = {
   distance: number;
@@ -38,29 +39,26 @@ const AsixMap = {
  * 获取方向的数据
  * @param deltaX 主轴偏移值
  * @param deltaY 交叉轴偏移值
- * @deprecated 废弃了，最终发现吸附不会只考虑一个方向，而是多个方向都要考虑
  */
-export const getDirection = (deltaX: number, deltaY: number): DirectionData => {
-  if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-    return {
-      direction: 'horizontal',
-      related: ['left', 'right'],
-      towards: deltaX > 0 ? 'right' : 'left',
-      delta: deltaX,
-      standardDelta: deltaX > 0 ? 1 : -1,
-    };
-  } else {
-    return {
-      direction: 'vertical',
-      related: ['top', 'bottom'],
-      towards: deltaY > 0 ? 'bottom' : 'top',
-      delta: deltaY,
-      standardDelta: deltaY > 0 ? 1 : -1,
-    };
+export const getMoveDirection = (deltaX: number, deltaY: number) => {
+  let hDirection, vDirection;
+
+  if (deltaX !== 0) {
+    hDirection = deltaX > 0 ? 'right' : 'left';
   }
+  if (deltaY !== 0) {
+    vDirection = deltaY > 0 ? 'bottom' : 'top';
+  }
+  return {
+    hDirection,
+    vDirection,
+  };
 };
 
-const calcAxisMagnetic = (
+/**
+ * 获取每个对照元素和目标元素的边界距离
+ */
+export const calcAxisMagnetic = (
   axis: 'horizontal' | 'vertical',
   target: MagicDraggingData,
   compares: MagicDraggingData[],
@@ -68,19 +66,22 @@ const calcAxisMagnetic = (
   let collects: MagneticData[] = [];
   const directions = AsixMap[axis].directions;
 
-  directions.forEach((direction) => {
-    const _target = target[direction as Direction];
+  // 对对照组中的每一个元素进行遍历
+  compares.forEach((item: any) => {
+    // 第一层遍历：目标元素的两个边界
+    directions.forEach((direction) => {
+      const _targetValue = target[direction as Direction];
 
-    // 获取移动方向上与各个自元素边界的距离
-    compares.forEach((item: any) => {
+      // 第二层遍历：对照元素的两个边界
       directions.forEach((bound) => {
-        const _compare = item[bound];
-        const _distance = Math.abs(_compare - _target);
+        const _compareValue = item[bound];
+        const _distance = _compareValue - _targetValue;
+        // 我们只考虑当前方向上，取正的情况
         collects.push({
           distance: _distance,
           targetDirection: direction as Direction,
           compareDirection: bound as Direction,
-          value: _compare,
+          value: _compareValue,
         });
       });
     });
@@ -89,48 +90,82 @@ const calcAxisMagnetic = (
   return collects;
 };
 
-const findNearstMag = (
-  type: 'horizontal' | 'vertical',
+export const horizontalX = (
   target: MagicDraggingData,
   compares: MagicDraggingData[],
-) => {
-  const magArray = calcAxisMagnetic(type, target, compares);
-  let tem = magArray[0] || {};
+  moveDirection: Direction,
+): number => {
+  const { lastX = 0 } = target;
+  if (!moveDirection) return lastX;
+
+  let magArray = calcAxisMagnetic('horizontal', target, compares);
+
+  magArray =
+    moveDirection === 'left'
+      ? magArray.filter((item) => item.distance < 0)
+      : magArray.filter((item) => item.distance > 0);
+
+  let nearst = magArray[0] || {};
+
   magArray.forEach((item) => {
-    if (item.distance < tem.distance) tem = item;
+    if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
-  return tem;
+
+  console.log({ magArray, nearst });
+
+  // 如果最短的距离仍旧比阈值大，则放弃
+  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastX;
+
+  return nearst.targetDirection === 'right'
+    ? nearst.value - target.width
+    : nearst.value;
+};
+
+export const horizontalY = (
+  target: MagicDraggingData,
+  compares: MagicDraggingData[],
+  moveDirection: Direction,
+) => {
+  const { lastY = 0 } = target;
+
+  if (!moveDirection) return lastY;
+
+  let magArray = calcAxisMagnetic('vertical', target, compares);
+
+  magArray =
+    moveDirection === 'top'
+      ? magArray.filter((item) => item.distance < 0)
+      : magArray.filter((item) => item.distance > 0);
+
+  let nearst = magArray[0] || {};
+
+  magArray.forEach((item) => {
+    if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
+  });
+
+  // 如果最短的距离仍旧比阈值大，则放弃
+  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastY;
+
+  return nearst.targetDirection === 'bottom'
+    ? nearst.value - target.height
+    : nearst.value;
 };
 
 export const calcMagnetic = (
   target: MagicDraggingData,
   compares: MagicDraggingData[],
 ) => {
-  let horizontalNearst = findNearstMag('horizontal', target, compares);
-  let verticalNearst = findNearstMag('vertical', target, compares);
-
-  // console.log({ horizontalNearst, verticalNearst });
-
-  // // 排序，获取距离最短的边界
-  // magneticArray = magneticArray.sort(
-  //   (a: any, b: any) => a.distance - b.distance,
-  // );
-  // const _adjust = magneticArray[0];
-  const { lastX, lastY, width, height } = target;
-  let adjustX = lastX,
-    adjustY = lastY;
-
-  if (horizontalNearst.distance < MagneticThreshold) {
-    adjustX =
-      horizontalNearst.value +
-      (horizontalNearst.targetDirection === 'right' ? -width : 0);
+  if (target.deltaX || target.deltaY) {
+    console.log(target, compares);
   }
 
-  if (verticalNearst.distance < MagneticThreshold) {
-    adjustY =
-      verticalNearst.value +
-      (verticalNearst.targetDirection === 'bottom' ? -height : 0);
-  }
+  const { deltaX = 0, deltaY = 0 } = target;
+  // 获取移动方向
+  const { hDirection, vDirection } = getMoveDirection(deltaX, deltaY);
+
+  // 分别从水平方向和垂直方向上探索吸附的可能性
+  const adjustX = horizontalX(target, compares, hDirection as Direction);
+  const adjustY = horizontalY(target, compares, vDirection as Direction);
 
   return {
     ...target,

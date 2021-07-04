@@ -10,7 +10,7 @@ import { collectChildrenData, calcMagnetic } from './handle';
 
 import { MagicDraggingData, LayoutItem, LayoutType } from '../typings';
 
-import ChildWrapper, { ChildData } from '../ChildWrapper';
+import ChildWrapper from '../ChildWrapper';
 import GuideLines from '../GuideLines';
 
 export interface MagicLayoutState {
@@ -78,17 +78,17 @@ export default class MagicLayout extends PureComponent<
     this.props.onLayoutChange(layout);
   };
 
-  onChildStateUpdate = (data: ChildData) => {
-    const { key, ele, state } = data;
-    const { children } = this.config;
-    if (key) {
-      children[key] = state;
-    } else {
-      console.error('该子元素缺少key或者uid', ele);
-      return;
-    }
-    // console.log('[MagicLayout]: Child State Update', this.config);
-  };
+  // onChildStateUpdate = (data: ChildData) => {
+  //   const { key, ele, state } = data;
+  //   const { children } = this.config;
+  //   if (key) {
+  //     children[key] = state;
+  //   } else {
+  //     console.error('该子元素缺少key或者uid', ele);
+  //     return;
+  //   }
+  //   // console.log('[MagicLayout]: Child State Update', this.config);
+  // };
 
   unsetLayout = () => {
     const layout = this.props.layout.slice(0);
@@ -97,21 +97,6 @@ export default class MagicLayout extends PureComponent<
     });
     this.props.onLayoutChange(layout);
   };
-
-  /** LifeCycle Hooks */
-  // componentDidUpdate() {
-  //   colorLog('red', `[MagicLayout]`, `Did Update`);
-  //   const { onStateChange } = this.props;
-  //   onStateChange(this.state);
-  // }
-
-  // shouldComponentUpdate(newProps: MagicLayoutProps, newState: MagicState) {
-  //   const { layout } = this.props;
-  //   const { selects } = this.state;
-  //   console.log({ selects, new: newState.selects });
-
-  //   return layout !== newProps.layout || selects !== newState.selects;
-  // }
 
   componentDidMount() {
     // this.config = buildConfig(this.props);
@@ -158,16 +143,20 @@ export default class MagicLayout extends PureComponent<
       const { width, height } = childLayout as LayoutItem;
       const { lastX, lastY } = data;
 
+      const targetData = { ...data, width, height };
+
       // 处理吸附逻辑
       const result = calcMagnetic(
         { ...data, width, height },
         this.$compares.data,
       );
 
+      // console.log({ lastX: typeof result.lastX, lastY: typeof result.lastY });
+
       // 限制移动范围至画布边界
       const boundRange = this.limitDragRange(
-        result ? result.lastX : lastX,
-        result ? result.lastY : lastY,
+        result?.lastX || lastX,
+        result?.lastY || lastY,
         width,
         height,
       );
@@ -212,7 +201,6 @@ export default class MagicLayout extends PureComponent<
         _dragStart={this.onChildDragStart(uid)}
         _dragging={this.onChildDragging(uid)}
         // handleClick={this.onChildrenClick}
-        handleStateUpdate={() => {}}
       >
         {child}
       </ChildWrapper>
@@ -225,39 +213,37 @@ export default class MagicLayout extends PureComponent<
     const { selects } = this.state;
     const { layout } = this.props;
 
-    if (Array.isArray(children)) {
-      return children.map((child: any, index) => {
-        if (autoWrapChildren) {
-        }
-        const { uid, 'data-uid': dataUID } = child.props;
-        const uniqueKey = uid || dataUID || `child_${index}`;
-        const childLayout = layout.find(
-          (item: LayoutItem) => item.uid === uniqueKey,
-        );
+    const childrenNodes = Array.isArray(children) ? children : [children];
 
-        // 这里需要判断是不是需要包裹子元素
-        if (!autoWrapChildren) {
-          return cloneElement(child, {
-            uid: uniqueKey,
-            key: uniqueKey,
-            layout: childLayout,
-            _click: (e: any) => {
-              this.onChildrenClick(e, uniqueKey);
-            },
-            _dragStart: this.onChildDragStart(uniqueKey),
-            _dragging: this.onChildDragging(uniqueKey),
-            _dragEnd: this.onChildDragEnd,
-            _resize: this.onChildResize,
-            selected: childLayout?.selected,
-            handleStateUpdate: () => {},
-          });
-        } else {
-          return this.wrapChildren(child, uniqueKey);
-        }
-      });
-    } else {
-      return children;
-    }
+    return childrenNodes.map((child: any, index) => {
+      if (autoWrapChildren) {
+      }
+      const { uid, 'data-uid': dataUID } = child.props;
+      const uniqueKey = uid || dataUID || `child_${index}`;
+      const childLayout = layout.find(
+        (item: LayoutItem) => item.uid === uniqueKey,
+      );
+
+      // 这里需要判断是不是需要包裹子元素
+      if (!autoWrapChildren) {
+        return cloneElement(child, {
+          uid: uniqueKey,
+          key: uniqueKey,
+          layout: childLayout,
+          _click: (e: any) => {
+            this.onChildrenClick(e, uniqueKey);
+          },
+          _dragStart: this.onChildDragStart(uniqueKey),
+          _dragging: this.onChildDragging(uniqueKey),
+          _dragEnd: this.onChildDragEnd,
+          _resize: this.onChildResize,
+          selected: childLayout?.selected,
+          handleStateUpdate: () => {},
+        });
+      } else {
+        return this.wrapChildren(child, uniqueKey);
+      }
+    });
   };
 
   render() {

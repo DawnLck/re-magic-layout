@@ -30,150 +30,92 @@ interface ChildWrapperProps {
   layout?: LayoutItem;
 
   // 来源于开发者的响应函数
-  onClick: (data: any) => void;
-  onDragStart: (e: DraggableEvent, data: DraggableData) => any;
-  onDragging: (data: MagicDraggingData) => any;
-  onDragEnd: () => void;
+  onClick?: (data: any) => void;
+  onDragStart?: (e: DraggableEvent, data: DraggableData) => any;
+  onDragging?: (data: MagicDraggingData) => any;
+  onDragEnd?: () => void;
+
   // 来源于MagicLayout的响应函数
-  _click: MouseEventHandler;
-  _dragStart: () => any;
-  _dragging: (data: MagicDraggingData) => any;
-  _dragEnd: () => any;
-  _resize: (uid: string, layout: LayoutItem) => void;
+  _click?: MouseEventHandler;
+  _dragStart?: () => any;
+  _dragging?: (data: MagicDraggingData) => any;
+  _dragEnd?: () => any;
+  _resize?: (uid: string, layout: LayoutItem) => void;
 
-  // handleClick: (data: ChildData) => void;
-  handleStateUpdate: (data: ChildData) => void;
+  children: ReactNode;
 }
 
-export interface ChildWrapperState {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  border?: number | string;
-  zIndex: number;
-}
+const ChildWrapper = (props: ChildWrapperProps) => {
+  const {
+    children,
+    className,
+    selected,
+    uid,
+    grid,
+    layout = {} as LayoutItem,
+    onDragEnd = noop,
+    onClick = noop,
+    onDragStart = noop,
+    onDragging = noop,
+    _click = noop,
+    _dragStart = noop,
+    _dragEnd = noop,
+    _dragging = noop,
+    _resize = noop,
+  } = props;
+  const { width, height, zIndex, x, y } = layout;
 
-export type ChildData = {
-  key: string | number | null;
-  state: ChildWrapperState;
-  ele: ReactNode;
-};
+  let $cursor: null | { startX: number; startY: number } = null;
+  let $origin: null | { x: number; y: number } = null;
 
-class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
-  private $cursor: {
-    startX: number;
-    startY: number;
-  };
-  private $origin: {
-    x: number;
-    y: number;
-  };
-  static defaultProps = {
-    grid: 1,
-    layout: {},
-    onClick: noop,
-    onDragStart: noop,
-    onDragging: noop,
-    onDragEnd: noop,
-    _click: noop,
-    _dragStart: noop,
-    _dragging: noop,
-    _dragEnd: noop,
-    _resize: noop,
-    handleStateUpdate: noop,
-  };
-  constructor(props: any) {
-    super(props);
-
-    const { children, layout, defaultPosition } = this.props;
-
-    const {
-      style,
-      width: propWidth,
-      height: propHeight,
-    } = (children as any).props;
-
-    const width = layout?.width || (style && style.width) || propWidth;
-    const height = layout?.height || (style && style.height) || propHeight;
-
-    this.state = {
-      x: layout?.x || defaultPosition?.x || 0,
-      y: layout?.y || defaultPosition?.y || 0,
-      width,
-      height,
-      border: 0,
-      zIndex: 1,
-    };
-
-    this.$cursor = { startX: 0, startY: 0 };
-    this.$origin = { x: 0, y: 0 };
-  }
-
-  updateState = (state: ChildWrapperState) => {
-    this.setState(state);
-    this.props.handleStateUpdate({
-      key: this.props.uid,
-      state: state,
-      ele: this,
-    });
-  };
-
-  createChildData = (e: MouseEvent): ChildData => {
-    return { key: this.props.uid, state: this.state, ele: e.target };
-  };
-
-  handleClick = (e: any) => {
-    clearEvent(e);
-    const data = {
-      key: this.props.uid,
-      state: this.state,
-      ele: e.target,
-    };
-
-    this.props.onClick(data);
-    this.props._click(e);
-  };
-
-  /**
-   * 处理子元素的Drag事件
-   */
-
-  handleDragStart = (e: DraggableEvent, data: DraggableData) => {
+  const handleDragStart = (e: DraggableEvent, data: DraggableData) => {
     const {
       x: cursorX,
       y: cursorY,
       lastX: lastCursorX,
       lastY: lastCursorY,
     } = data;
-    this.$cursor = {
+    $cursor = {
       startX: lastCursorX,
       startY: lastCursorY,
     };
-    this.$origin = {
-      x: this.props.layout?.x || this.state.x,
-      y: this.props.layout?.y || this.state.y,
+    $origin = {
+      x: x || 0,
+      y: y || 0,
     };
-    this.props.onDragStart(e, data);
-    this.props._dragStart();
+
+    // console.log('Drag Start', { $cursor, $origin, data });
+
+    onDragStart(e, data);
+    _dragStart();
   };
 
-  handleDragging = (e: DraggableEvent, data: DraggableData) => {
+  const handleDragging = (e: DraggableEvent, data: DraggableData) => {
+    // console.log('Dragging', { $cursor, $origin }, data);
     const {
-      // x: cursorX,
-      // y: cursorY,
+      x: cursorX,
+      y: cursorY,
       lastX: cursorLastX,
       lastY: cursorLastY,
       // deltaX,
       // deltaY,
     } = data;
-    const { width, height } = this.state;
-    const { startX: cursorStartX, startY: cursorStartY } = this.$cursor;
-    const deltaCursorX = cursorLastX - cursorStartX;
-    const deltaCursorY = cursorLastY - cursorStartY;
-    const { x, y } = this.$origin;
+    if (!$cursor) {
+      $cursor = {
+        startX: cursorLastX,
+        startY: cursorLastY,
+      };
+    }
+    if (!$origin) {
+      $origin = { x: layout.x, y: layout.y };
+    }
+    const { startX: cursorStartX, startY: cursorStartY } = $cursor;
+    const deltaCursorX = cursorX - cursorStartX;
+    const deltaCursorY = cursorY - cursorStartY;
 
-    const result = this.props._dragging({
+    const { x, y } = $origin;
+
+    const result = _dragging({
       node: e.target,
       width,
       height,
@@ -187,26 +129,27 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     });
     const { adjustX, adjustY } = result;
 
-    this.setState({ x: adjustX, y: adjustY });
+    // this.setState({ x: adjustX, y: adjustY });
+
+    // onDragging({});
 
     // Drag 会触发一次Click事件，形成事件的上传，不过有个地方需要完善，用户如果拖出范围，click事件就会丢失，导致位置没有及时刷新
   };
 
-  handleDragEnd = () => {
-    this.props._dragEnd();
+  const handleDragEnd = () => {
+    _dragEnd();
+    onDragEnd();
   };
 
-  componentDidMount() {
-    // 传递子元素实例
-    this.props.handleStateUpdate({
-      key: this.props.uid,
-      state: this.state,
-      ele: this,
-    });
-  }
+  const handleClick = (e: any) => {
+    clearEvent(e);
 
-  resizeChild = (data: any) => {
-    const layout = this.props.layout;
+    onClick({});
+    _click(e);
+  };
+
+  const resizeChild = (data: any) => {
+    const layout = props.layout;
     if (!layout) return;
     const { width, height, deltaX, deltaY } = data;
     layout.width = width;
@@ -214,72 +157,63 @@ class ChildWrapper extends Component<ChildWrapperProps, ChildWrapperState> {
     layout.x = layout.x + deltaX;
     layout.y = layout.y + deltaY;
 
-    this.props._resize(this.props.uid, layout);
+    _resize(props.uid, layout);
   };
 
-  render() {
-    const { children, className, selected, uid, grid, layout } = this.props;
-    const { width, height, border, zIndex, x, y } = this.state;
+  const gridProp: any = grid
+    ? { grid: [Math.max(grid, 1), Math.max(grid, 1)] }
+    : { grid: null };
 
-    const gridProp: any = grid
-      ? { grid: [Math.max(grid, 1), Math.max(grid, 1)] }
-      : { grid: null };
+  const childPosition = { x: layout?.x || x, y: layout?.y || y };
 
-    const childPosition = { x: layout?.x || x, y: layout?.y || y };
+  const style = {
+    transform: `translate(${childPosition.x}px, ${childPosition.y}px)`,
+    width: layout.width,
+    height: layout.height,
+    zIndex: layout.zIndex,
+  };
 
-    const style = {
-      transform: `translate(${childPosition.x}px, ${childPosition.y}px)`,
-      width: layout?.width || width,
-      height: layout?.height || height,
-      zIndex: layout?.zIndex || zIndex,
-      borderWidth: border,
-    };
-
-    return (
-      <DraggableCore
-        {...gridProp}
-        // bounds="parent"
-        onDrag={this.handleDragging}
-        onStart={this.handleDragStart}
-        onStop={this.handleDragEnd}
-
-        // offsetParent
+  return (
+    <DraggableCore
+      {...gridProp}
+      onDrag={handleDragging}
+      onStart={handleDragStart}
+      onStop={handleDragEnd}
+    >
+      <div
+        onClick={handleClick}
+        className={classNames(className, {
+          'layout-child': true,
+          selected,
+        })}
+        data-uid={uid}
+        data-x={x}
+        data-y={y}
+        style={style}
       >
-        <div
-          onClick={this.handleClick}
-          className={classNames(className, {
-            'layout-child': true,
-            selected,
-          })}
-          data-uid={uid}
-          data-x={x}
-          data-y={y}
-          style={style}
-        >
-          <div className="dev-tips">
-            {/* <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span> */}
-            index: <span>{style.zIndex}</span>
-          </div>
-          {cloneElement(children as any, {
-            props: {
-              width: width,
-              height: height,
-            },
-            style: {
-              width: '100%',
-              height: '100%',
-            },
-          })}
-          <ResizeAnchors
-            width={style.width}
-            height={style.height}
-            show={!!selected}
-            onChange={this.resizeChild}
-          ></ResizeAnchors>
+        <div className="dev-tips">
+          {/* <span>{x}</span>&nbsp;~&nbsp;<span>{y}</span> */}
+          index: <span>{style.zIndex}</span>
         </div>
-      </DraggableCore>
-    );
-  }
-}
+        {cloneElement(children as any, {
+          props: {
+            width: width,
+            height: height,
+          },
+          style: {
+            width: '100%',
+            height: '100%',
+          },
+        })}
+        <ResizeAnchors
+          width={style.width}
+          height={style.height}
+          show={!!selected}
+          onChange={resizeChild}
+        ></ResizeAnchors>
+      </div>
+    </DraggableCore>
+  );
+};
 
 export default ChildWrapper;
