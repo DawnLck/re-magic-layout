@@ -18,7 +18,7 @@ import { classNames, noop, buildBoundaries, clearEvent } from '@/utils';
 import './index.less';
 
 import ResizeAnchors from '../ResizeAnchors';
-import { MagicDraggingData, LayoutItem } from '../typings';
+import { NodeAttr, LayoutItem, DraggingProps } from '../typings';
 
 interface ChildWrapperProps {
   uid?: any;
@@ -32,13 +32,13 @@ interface ChildWrapperProps {
   // 来源于开发者的响应函数
   onClick?: (data: any) => void;
   onDragStart?: (e: DraggableEvent, data: DraggableData) => any;
-  onDragging?: (data: MagicDraggingData) => any;
+  onDragging?: (data: DraggingProps) => any;
   onDragEnd?: () => void;
 
   // 来源于MagicLayout的响应函数
   _click?: MouseEventHandler;
   _dragStart?: () => any;
-  _dragging?: (data: MagicDraggingData) => any;
+  _dragging?: (data: DraggingProps) => any;
   _dragEnd?: () => any;
   _resize?: (uid: string, layout: LayoutItem) => void;
 

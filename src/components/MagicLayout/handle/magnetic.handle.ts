@@ -4,7 +4,7 @@
  */
 
 import { buildBoundaries } from '@/utils';
-import { MagicDraggingData } from '../../typings';
+import { DraggingProps, NodeAttr } from '../../typings';
 
 const MagneticThreshold = 10.1;
 
@@ -60,8 +60,8 @@ export const getMoveDirection = (deltaX: number, deltaY: number) => {
  */
 export const calcAxisMagnetic = (
   axis: 'horizontal' | 'vertical',
-  target: MagicDraggingData,
-  compares: MagicDraggingData[],
+  target: DraggingProps,
+  compares: NodeAttr[],
 ): MagneticData[] => {
   let collects: MagneticData[] = [];
   const directions = AsixMap[axis].directions;
@@ -91,8 +91,8 @@ export const calcAxisMagnetic = (
 };
 
 export const horizontalX = (
-  target: MagicDraggingData,
-  compares: MagicDraggingData[],
+  target: DraggingProps,
+  compares: NodeAttr[],
   moveDirection: Direction,
 ): number => {
   const { lastX = 0 } = target;
@@ -122,11 +122,11 @@ export const horizontalX = (
 };
 
 export const horizontalY = (
-  target: MagicDraggingData,
-  compares: MagicDraggingData[],
+  target: DraggingProps,
+  compares: NodeAttr[],
   moveDirection: Direction,
 ) => {
-  const { lastY = 0 } = target;
+  const { lastY = 0, deltaY = 0 } = target;
 
   if (!moveDirection) return lastY;
 
@@ -134,7 +134,11 @@ export const horizontalY = (
 
   magArray =
     moveDirection === 'top'
-      ? magArray.filter((item) => item.distance < 0)
+      ? magArray.filter(
+          (item) =>
+            item.distance < 0 ||
+            Math.abs(item.distance) < MagneticThreshold / 2,
+        )
       : magArray.filter((item) => item.distance > 0);
 
   let nearst = magArray[0] || {};
@@ -144,19 +148,21 @@ export const horizontalY = (
   });
 
   // 如果最短的距离仍旧比阈值大，则放弃
-  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastY;
+  if (
+    !nearst ||
+    Math.abs(nearst.distance) > MagneticThreshold ||
+    Math.abs(nearst.distance) < deltaY
+  )
+    return lastY;
 
   return nearst.targetDirection === 'bottom'
     ? nearst.value - target.height
     : nearst.value;
 };
 
-export const calcMagnetic = (
-  target: MagicDraggingData,
-  compares: MagicDraggingData[],
-) => {
+export const calcMagnetic = (target: DraggingProps, compares: NodeAttr[]) => {
   if (target.deltaX || target.deltaY) {
-    console.log(target, compares);
+    console.log(target.deltaX, target.deltaY);
   }
 
   const { deltaX = 0, deltaY = 0 } = target;
