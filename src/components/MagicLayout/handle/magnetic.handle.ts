@@ -102,8 +102,16 @@ export const horizontalX = (
 
   magArray =
     moveDirection === 'left'
-      ? magArray.filter((item) => item.distance < 0)
-      : magArray.filter((item) => item.distance > 0);
+      ? magArray.filter(
+          (item) =>
+            item.distance < 0 ||
+            Math.abs(item.distance) < MagneticThreshold / 2,
+        )
+      : magArray.filter(
+          (item) =>
+            item.distance > 0 ||
+            Math.abs(item.distance) < MagneticThreshold / 2,
+        );
 
   let nearst = magArray[0] || {};
 
@@ -111,7 +119,7 @@ export const horizontalX = (
     if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
 
-  console.log({ magArray, nearst });
+  // console.log({ magArray, nearst });
 
   // 如果最短的距离仍旧比阈值大，则放弃
   if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastX;
@@ -139,7 +147,11 @@ export const horizontalY = (
             item.distance < 0 ||
             Math.abs(item.distance) < MagneticThreshold / 2,
         )
-      : magArray.filter((item) => item.distance > 0);
+      : magArray.filter(
+          (item) =>
+            item.distance > 0 ||
+            Math.abs(item.distance) < MagneticThreshold / 2,
+        );
 
   let nearst = magArray[0] || {};
 
@@ -161,9 +173,9 @@ export const horizontalY = (
 };
 
 export const calcMagnetic = (target: DraggingProps, compares: NodeAttr[]) => {
-  if (target.deltaX || target.deltaY) {
-    console.log(target.deltaX, target.deltaY);
-  }
+  // if (target.deltaX || target.deltaY) {
+  //   console.log(target.deltaX, target.deltaY);
+  // }
 
   const { deltaX = 0, deltaY = 0 } = target;
   // 获取移动方向

@@ -20,6 +20,8 @@ import './index.less';
 import ResizeAnchors from '../ResizeAnchors';
 import { NodeAttr, LayoutItem, DraggingProps } from '../typings';
 
+let $cursor: null | { startX: number; startY: number } = null;
+let $origin: null | { x: number; y: number } = null;
 interface ChildWrapperProps {
   uid?: any;
   className?: string;
@@ -65,9 +67,6 @@ const ChildWrapper = (props: ChildWrapperProps) => {
   } = props;
   const { width, height, zIndex, x, y } = layout;
 
-  let $cursor: null | { startX: number; startY: number } = null;
-  let $origin: null | { x: number; y: number } = null;
-
   const handleDragStart = (e: DraggableEvent, data: DraggableData) => {
     const {
       x: cursorX,
@@ -75,16 +74,18 @@ const ChildWrapper = (props: ChildWrapperProps) => {
       lastX: lastCursorX,
       lastY: lastCursorY,
     } = data;
+
     $cursor = {
       startX: lastCursorX,
       startY: lastCursorY,
     };
+
     $origin = {
       x: x || 0,
       y: y || 0,
     };
 
-    // console.log('Drag Start', { $cursor, $origin, data });
+    console.log('Drag Start', { $cursor, $origin, data });
 
     onDragStart(e, data);
     _dragStart();
@@ -92,6 +93,10 @@ const ChildWrapper = (props: ChildWrapperProps) => {
 
   const handleDragging = (e: DraggableEvent, data: DraggableData) => {
     // console.log('Dragging', { $cursor, $origin }, data);
+    if (!$cursor) {
+      console.error('$cursor is null!', $cursor);
+      return;
+    }
     const {
       x: cursorX,
       y: cursorY,
@@ -100,12 +105,7 @@ const ChildWrapper = (props: ChildWrapperProps) => {
       // deltaX,
       // deltaY,
     } = data;
-    if (!$cursor) {
-      $cursor = {
-        startX: cursorLastX,
-        startY: cursorLastY,
-      };
-    }
+
     if (!$origin) {
       $origin = { x: layout.x, y: layout.y };
     }
@@ -127,7 +127,8 @@ const ChildWrapper = (props: ChildWrapperProps) => {
       lastY: y + deltaCursorY,
       ...buildBoundaries(x + deltaCursorX, y + deltaCursorY, width, height),
     });
-    const { adjustX, adjustY } = result;
+
+    // const { adjustX, adjustY } = result;
 
     // this.setState({ x: adjustX, y: adjustY });
 

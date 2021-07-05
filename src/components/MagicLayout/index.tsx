@@ -8,7 +8,7 @@ import React, { cloneElement, createRef, PureComponent } from 'react';
 import { buildBoundaries, classNames, colorLog, mathBetween } from '@/utils';
 import { collectChildrenData, calcMagnetic } from './handle';
 
-import { MagicDraggingData, LayoutItem, LayoutType } from '../typings';
+import { DraggingProps, LayoutItem, LayoutType } from '../typings';
 
 import ChildWrapper from '../ChildWrapper';
 import GuideLines from '../GuideLines';
@@ -138,7 +138,7 @@ export default class MagicLayout extends PureComponent<
 
   // onChildDragging 拖拽时计算辅助参考线和吸附
   onChildDragging = (uid: string) => {
-    return (data: MagicDraggingData) => {
+    return (data: DraggingProps) => {
       const childLayout = this.props.layout.find((item) => item.uid === uid);
       const { width, height } = childLayout as LayoutItem;
       const { lastX, lastY } = data;
