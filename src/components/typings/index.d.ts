@@ -39,8 +39,8 @@ export type NodeAttr = {
 export interface DraggingProps extends NodeAttr {
   deltaX: number; // Cursor deltaX 鼠标在X主轴上偏移的距离
   deltaY: number; // Cursor deltaY 鼠标在Y交叉轴上偏移的距离
-  lastX?: number; // x+deltaX 如果符合鼠标预期，target的x位置
-  lastY?: number; // y+deltaY 如果符合鼠标预期，target的y位置
+  lastX: number; // x+deltaX 如果符合鼠标预期，target的x位置
+  lastY: number; // y+deltaY 如果符合鼠标预期，target的y位置
 }
 
 export type LayoutType = 'free' | 'flex' | 'float';
