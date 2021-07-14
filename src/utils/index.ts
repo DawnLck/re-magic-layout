@@ -78,6 +78,7 @@ export const mathBetween = (target: number, min: number, max: number) => {
   return Math.min(max, Math.max(target, min));
 };
 
+// 由基础数据生成边界
 export const buildBoundaries = (
   x: number,
   y: number,

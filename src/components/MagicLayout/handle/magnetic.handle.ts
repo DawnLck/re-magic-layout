@@ -95,7 +95,7 @@ export const horizontalX = (
   compares: NodeAttr[],
   moveDirection: Direction,
 ): number => {
-  const { lastX = 0 } = target;
+  const { lastX = 0, deltaX = 0 } = target;
   if (!moveDirection) return lastX;
 
   let magArray = calcAxisMagnetic('horizontal', target, compares);
@@ -113,16 +113,19 @@ export const horizontalX = (
             Math.abs(item.distance) < MagneticThreshold / 2,
         );
 
-  let nearst = magArray[0] || {};
+  let nearst = magArray[0];
 
   magArray.forEach((item) => {
     if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
 
-  // console.log({ magArray, nearst });
-
   // 如果最短的距离仍旧比阈值大，则放弃
-  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastX;
+  if (
+    !nearst ||
+    Math.abs(nearst.distance) > MagneticThreshold ||
+    Math.abs(nearst.distance) < deltaX
+  )
+    return lastX;
 
   return nearst.targetDirection === 'right'
     ? nearst.value - target.width
@@ -153,23 +156,25 @@ export const horizontalY = (
             Math.abs(item.distance) < MagneticThreshold / 2,
         );
 
-  let nearst = magArray[0] || {};
+  let nearst = magArray[0];
 
   magArray.forEach((item) => {
     if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
 
   // 如果最短的距离仍旧比阈值大，则放弃
-  if (
-    !nearst ||
-    Math.abs(nearst.distance) > MagneticThreshold ||
-    Math.abs(nearst.distance) < deltaY
-  )
-    return lastY;
+  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastY;
 
-  return nearst.targetDirection === 'bottom'
-    ? nearst.value - target.height
-    : nearst.value;
+  if (deltaY < MagneticThreshold) {
+    return lastY - deltaY;
+  }
+
+  const result =
+    nearst.targetDirection === 'bottom'
+      ? nearst.value - target.height
+      : nearst.value;
+
+  return result;
 };
 
 export const calcMagnetic = (target: DraggingProps, compares: NodeAttr[]) => {
@@ -185,6 +190,9 @@ export const calcMagnetic = (target: DraggingProps, compares: NodeAttr[]) => {
   const adjustX = horizontalX(target, compares, hDirection as Direction);
   const adjustY = horizontalY(target, compares, vDirection as Direction);
 
+  // if (!adjustX || !adjustY) {
+  //   debugger;
+  // }
   return {
     ...target,
     lastX: adjustX,

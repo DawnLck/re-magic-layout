@@ -78,18 +78,6 @@ export default class MagicLayout extends PureComponent<
     this.props.onLayoutChange(layout);
   };
 
-  // onChildStateUpdate = (data: ChildData) => {
-  //   const { key, ele, state } = data;
-  //   const { children } = this.config;
-  //   if (key) {
-  //     children[key] = state;
-  //   } else {
-  //     console.error('该子元素缺少key或者uid', ele);
-  //     return;
-  //   }
-  //   // console.log('[MagicLayout]: Child State Update', this.config);
-  // };
-
   unsetLayout = () => {
     const layout = this.props.layout.slice(0);
     layout.forEach((item) => {
@@ -143,15 +131,13 @@ export default class MagicLayout extends PureComponent<
       const { width, height } = childLayout as LayoutItem;
       const { lastX, lastY } = data;
 
-      const targetData = { ...data, width, height };
+      // const targetData = { ...data, width, height };
 
       // 处理吸附逻辑
       const result = calcMagnetic(
         { ...data, width, height },
         this.$compares.data,
       );
-
-      // console.log({ lastX: typeof result.lastX, lastY: typeof result.lastY });
 
       // 限制移动范围至画布边界
       const boundRange = this.limitDragRange(
@@ -247,7 +233,6 @@ export default class MagicLayout extends PureComponent<
   };
 
   render() {
-    // const { layout } = this.props;
     const { target } = this.state;
 
     return (
