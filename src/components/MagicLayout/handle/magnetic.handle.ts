@@ -104,13 +104,11 @@ export const horizontalX = (
     moveDirection === 'left'
       ? magArray.filter(
           (item) =>
-            item.distance < 0 ||
-            Math.abs(item.distance) < MagneticThreshold / 2,
+            item.distance <= 0 || Math.abs(item.distance) < MagneticThreshold,
         )
       : magArray.filter(
           (item) =>
-            item.distance > 0 ||
-            Math.abs(item.distance) < MagneticThreshold / 2,
+            item.distance >= 0 || Math.abs(item.distance) < MagneticThreshold,
         );
 
   let nearst = magArray[0];
@@ -119,14 +117,14 @@ export const horizontalX = (
     if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
 
-  // 如果最短的距离仍旧比阈值大，则放弃
-  if (
-    !nearst ||
-    Math.abs(nearst.distance) > MagneticThreshold ||
-    Math.abs(nearst.distance) < deltaX
-  )
-    return lastX;
+  // eg1: 如果没有最短可比较的，且最短的距离仍旧比阈值大，则保持前进
+  if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastX;
 
+  // eg2: 如果最近的对比组，其距离就是0
+  if (nearst.distance === 0 && deltaX < MagneticThreshold)
+    return lastX - deltaX;
+
+  // eg3: 执行吸附
   return nearst.targetDirection === 'right'
     ? nearst.value - target.width
     : nearst.value;
@@ -162,19 +160,17 @@ export const horizontalY = (
     if (Math.abs(item.distance) < Math.abs(nearst.distance)) nearst = item;
   });
 
-  // 如果最短的距离仍旧比阈值大，则放弃
+  // eg1: 如果没有最短可比较的，且最短的距离仍旧比阈值大，则保持前进
   if (!nearst || Math.abs(nearst.distance) > MagneticThreshold) return lastY;
 
-  if (deltaY < MagneticThreshold) {
+  // eg2: 如果最近的对比组，其距离就是0
+  if (nearst.distance === 0 && deltaY < MagneticThreshold)
     return lastY - deltaY;
-  }
 
-  const result =
-    nearst.targetDirection === 'bottom'
-      ? nearst.value - target.height
-      : nearst.value;
-
-  return result;
+  // eg3: 执行吸附
+  return nearst.targetDirection === 'bottom'
+    ? nearst.value - target.height
+    : nearst.value;
 };
 
 export const calcMagnetic = (target: DraggingProps, compares: NodeAttr[]) => {

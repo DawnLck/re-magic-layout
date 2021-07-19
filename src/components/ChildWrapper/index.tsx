@@ -85,8 +85,6 @@ const ChildWrapper = (props: ChildWrapperProps) => {
       y: y || 0,
     };
 
-    console.log('Drag Start', { $cursor, $origin, data });
-
     onDragStart(e, data);
     _dragStart();
   };

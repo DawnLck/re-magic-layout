@@ -106,7 +106,6 @@ class CardSetting extends Component<CardSettingProps, CardSettingState> {
   };
 
   onAttrChange = (attr: string, value: any) => {
-    // console.log('onAttrChange', target);
     let { child } = this.props;
     const newState = Object.fromEntries([[attr, value]]);
     child.ele.updateState(newState);

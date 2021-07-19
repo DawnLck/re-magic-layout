@@ -20,7 +20,6 @@ class SideBar extends Component<SideBarProps> {
   };
 
   onTabsChange = (key: string) => {
-    // console.log(this.props.config);
     if (key === '2') {
       const { config } = this.props;
       // if (config?.current?.config) {
